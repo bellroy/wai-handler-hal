@@ -1,0 +1,74 @@
+cabal-version:      2.2
+name:               wai-handler-hal
+version:            0.1.0.0
+synopsis:           Wrap WAI applications to run on AWS Lambda
+description:
+  This library provides a function 'Network.Wai.Handler.Hal.run' to
+  lift a @wai@ 'Network.Wai.Application' into a function that can be
+  passed to @hal@'s 'AWS.Lambda.Runtime.mRuntimeWithContext'. This
+  allows you to run applications written in mature web frameworks
+  (e.g., @servant@) on AWS Lambda, as proxy integrations of API
+  Gateway Rest APIs.
+  .
+  More details, including deployment advice, are available in the
+  repository's @README.md@.
+
+bug-reports:        http://github.com/tricycle/wai-handler-hal/issues
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Bellroy Tech Team <haskell@bellroy.com>
+maintainer:         Bellroy Tech Team <haskell@bellroy.com>
+copyright:          Copyright (C) 2021 Bellroy Pty Ltd
+category:           AWS, Cloud
+build-type:         Simple
+extra-source-files:
+  CHANGELOG.md
+
+tested-with:        GHC ==8.6.5 || ==8.8.4 || ==8.10.4
+
+common opts
+  default-language: Haskell2010
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Werror=incomplete-patterns
+    -Wredundant-constraints -Wpartial-fields -Wtabs
+    -Wmissing-local-signatures -fhelpful-errors
+    -fprint-expanded-synonyms -fwarn-unused-do-bind
+
+common deps
+  build-depends:
+    , base                  >=4.12    && <4.15
+    , base64-bytestring     ^>=1.1.0.0
+    , bytestring            ^>=0.10.12
+    , case-insensitive      ^>=1.2.1.0
+    , hal                   ^>=0.4.6
+    , http-types            ^>=0.12.3
+    , network               ^>=3.1.1.1
+    , text                  ^>=1.2.3
+    , unordered-containers  ^>=0.2.13
+    , vault                 ^>=0.3.1.5
+    , wai                   ^>=3.2.3
+
+library
+  import:          opts, deps
+  exposed-modules: Network.Wai.Handler.Hal
+  hs-source-dirs:  src
+
+test-suite spec
+  import:             opts, deps
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  other-modules:      Network.Wai.Handler.Hal.Test
+  hs-source-dirs:     test
+  ghc-options:        -threaded
+  build-depends:
+    , tasty            ^>=1.4.0.2
+    , tasty-discover   ^>=4.2.2
+    , tasty-hunit      ^>=0.10.0.3
+    , wai-handler-hal
+
+  build-tool-depends: tasty-discover:tasty-discover -any
+
+source-repository head
+  type:     git
+  location: https://github.com/tricycle/wai-handler-hal.git

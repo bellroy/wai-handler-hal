@@ -1,0 +1,50 @@
+{
+    "haskell.nix": {
+        "branch": "master",
+        "description": "Alternative Haskell Infrastructure for Nixpkgs",
+        "homepage": "https://input-output-hk.github.io/haskell.nix",
+        "owner": "input-output-hk",
+        "repo": "haskell.nix",
+        "rev": "859d51a232b368d4bf03dc12173ffef90f9c4a51",
+        "sha256": "057ag9vlzd1f9qspb2qaavk4hcqqzgp1minmqzjrbpka8pc5y2cx",
+        "type": "tarball",
+        "url": "https://github.com/input-output-hk/haskell.nix/archive/859d51a232b368d4bf03dc12173ffef90f9c4a51.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "af958e8057f345ee1aca714c1247ef3ba1c15f5e",
+        "sha256": "1qjavxabbrsh73yck5dcq8jggvh3r2jkbr6b5nlz5d9yrqm9255n",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/af958e8057f345ee1aca714c1247ef3ba1c15f5e.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "master",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "86eedf1785637d1f779f6127544864ad3162588a",
+        "sha256": "0955lp9sbdqnffcd4a92fviv6vbm1vbky1sc868l7csr45z5yjfl",
+        "type": "tarball",
+        "url": "https://github.com/nixos/nixpkgs/archive/86eedf1785637d1f779f6127544864ad3162588a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "ormolu": {
+        "branch": "master",
+        "description": "A formatter for Haskell source code",
+        "homepage": null,
+        "owner": "tweag",
+        "repo": "ormolu",
+        "rev": "34bdf62429768f24b70d0f8ba7730fc4d8ae73ba",
+        "sha256": "0yfg45dfq6jx5nbfj5xihdzi8xhs7mxlm6b35rw6q8ck2qc2fm0l",
+        "type": "tarball",
+        "url": "https://github.com/tweag/ormolu/archive/34bdf62429768f24b70d0f8ba7730fc4d8ae73ba.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

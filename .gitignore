@@ -1,0 +1,5 @@
+.dir-locals.el
+dist-newstyle/
+dist/
+node_modules/
+result

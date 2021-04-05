@@ -1,0 +1,53 @@
+cabal-version:      2.2
+name:               wai-handler-hal-example
+version:            0.1.0.0
+synopsis:           AWS Lambda application using servant and wai-handler-hal
+description:
+  The executable built by this package defines and implements a
+  Servant API, and then uses wai-handler-hal to package it into a
+  binary which can run as a Lambda Proxy Integration of an AWS API
+  Gateway REST API.
+
+bug-reports:        http://github.com/tricycle/wai-handler-hal/issues
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Bellroy Tech Team <haskell@bellroy.com>
+maintainer:         Bellroy Tech Team <haskell@bellroy.com>
+copyright:          Copyright (C) 2021 Bellroy Pty Ltd
+category:           AWS, Cloud
+build-type:         Simple
+extra-source-files:
+  CHANGELOG.md
+  README.md
+
+tested-with:        GHC ==8.6.5 || ==8.8.4 || ==8.10.4
+
+common opts
+  default-language: Haskell2010
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Werror=incomplete-patterns
+    -Wredundant-constraints -Wpartial-fields -Wtabs
+    -Wmissing-local-signatures -fhelpful-errors
+    -fprint-expanded-synonyms -fwarn-unused-do-bind
+
+common deps
+  build-depends:
+    , aeson            ^>=1.5.6.0
+    , base             >=4.12    && <4.15
+    , hal              ^>=0.4.6
+    , servant          ^>=0.18.2
+    , servant-server   ^>=0.18.2
+    , text             ^>=1.2.3
+    , vault            ^>=0.3.1.5
+    , wai-handler-hal
+
+executable wai-handler-hal-example
+  import:         opts, deps
+  main-is:        Main.hs
+  hs-source-dirs: src
+  ghc-options:    -threaded
+
+source-repository head
+  type:     git
+  location: https://github.com/tricycle/wai-handler-hal.git

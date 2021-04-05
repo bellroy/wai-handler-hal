@@ -1,0 +1,31 @@
+{
+  "name": "wai-handler-hal-cdk",
+  "version": "0.1.0",
+  "license": "BSD-3-CLAUSE",
+  "bin": {
+    "wai-handler-hal-cdk": "bin/wai-handler-hal-cdk.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tricycle/wai-handler-hal.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "1.96.0",
+    "@types/node": "10.17.27",
+    "aws-cdk": "1.96.0",
+    "ts-node": "^9.0.0",
+    "typescript": "~3.9.7"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "^1.96.0",
+    "@aws-cdk/aws-lambda": "^1.96.0",
+    "@aws-cdk/aws-logs": "^1.96.0",
+    "@aws-cdk/core": "1.96.0",
+    "source-map-support": "^0.5.16"
+  }
+}
