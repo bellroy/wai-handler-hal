@@ -11,7 +11,7 @@ let
   pkgs = haskellNix.pkgs;
 in
 pkgs.dockerTools.streamLayeredImage {
-  name = "example-container";
+  name = "wai-handler-hal-example-tiny-container";
   tag = "latest";
 
   contents =
@@ -23,11 +23,10 @@ pkgs.dockerTools.streamLayeredImage {
       # can get is busybox, statically linked against musl.
       busybox = pkgs.pkgsCross.musl64.busybox.override {
         enableStatic = true;
-        enableMinimal = true;
       };
 
       # Grab the runtime interface emulator from a GitHub release.
-      runtime-interface-emulator = builtins.fetchurl {
+      runtimeInterfaceEmulator = builtins.fetchurl {
         url = "https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/v1.0/aws-lambda-rie";
         sha256 = "1x0200q4cnwwjiqsdqqm1ypz5hah9v7fzdc66kqw9sv3j1da11d4";
       };
@@ -42,15 +41,16 @@ pkgs.dockerTools.streamLayeredImage {
           exec /var/runtime/bootstrap
         fi
       '';
+
+      otherContents = pkgs.runCommandLocal "other-contents" { } ''
+        mkdir -p $out/usr/local/bin $out/var/runtime $out/var/task
+        cp ${entrypoint} $out/lambda-entrypoint.sh
+        cp ${runtimeInterfaceEmulator} $out/usr/local/bin/aws-lambda-rie
+        chmod +x $out/usr/local/bin/aws-lambda-rie
+        cp ${bootstrap}/bootstrap $out/var/runtime/bootstrap
+      '';
     in
-    # Assemble the filesystem layout for the container.
-    pkgs.runCommandLocal "container-contents" { } ''
-      mkdir -p $out/usr/local/bin $out/var/runtime $out/var/task
-      cp ${entrypoint} $out/lambda-entrypoint.sh
-      cp ${runtime-interface-emulator} $out/usr/local/bin/aws-lambda-rie
-      chmod +x $out/usr/local/bin/aws-lambda-rie
-      cp ${bootstrap}/bootstrap $out/var/runtime/bootstrap
-    '';
+    [ busybox otherContents ];
 
   # Config is unchanged from `container.nix`; there is no
   # technical requirement for EntryPoint or WorkingDir to have these

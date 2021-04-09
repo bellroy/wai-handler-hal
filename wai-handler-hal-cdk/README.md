@@ -27,6 +27,49 @@ on using CDK in your account any more, remember to remove its
 bootstrap CloudFormation stack, and manually delete any leftover
 resources (like S3 buckets).
 
+## Building the binary
+
+`runtime/default.nix` is a Nix expression to build the
+statically-linked `hal` binary, and the CDK script is configured to
+expect it at `runtime/result/bootstrap`. There are two other example
+`.nix` files in that directory, if you want to explore deploying
+Lambda functions using OCI images on
+[ECR](https://aws.amazon.com/ecr/):
+
+* `runtime/container.nix` builds a container from Amazon's
+  [`al2`](https://hub.docker.com/r/amazon/aws-lambda-provided/tags)
+  container. It places the statically-linked binary into the correct
+  location in the container filesystem. Load with `docker load <
+  result`.
+* `runtime/tiny-container.nix` builds a minimal container from four
+  parts:
+  - The statically-linked Haskell binary;
+  - The [Lambda Runtime Interface
+    Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator/);
+  - A `lambda-entrypoint.sh` to run the emulator if the container is
+    not running in the AWS Cloud; and
+  - A statically-linked `busybox`, to provide a minimal shell to run
+    the entrypoint script.
+  Load with `./result | docker load`
+
+### Thoughts on the container format and the Lambda Runtime Interface Emulator
+
+This emulator simulates the Lambda runtime environment, so that you
+can run your functions locally and invoke them using `curl`. If you
+can run your web service using `warp`, the emulator is probably not
+especially useful. But if you're directly invoking your Lambda
+Function, or have it connected to other event sources, it can be
+helpful to capture some payloads and replay them locally. You can then
+insert debug prints without redeploying, waiting for CloudWatch Logs,
+etc.
+
+If you can make working static binaries, remapping the port used by
+the emulator looks like the only real benefit to making a container,
+and so zip-based Lambda Functions appear perfectly acceptable for
+deployment. Besides, if you're only testing one Lambda Function at a
+time, you can download the emulator and run it straight from the
+shell.
+
 ## Useful commands
 
  * `npm run build` --- compile typescript to js
