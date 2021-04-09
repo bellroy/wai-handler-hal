@@ -3,8 +3,8 @@
 This is a simple CDK project that deploys a Lambda based on
 `wai-handler-hal` to serve an entire API Gateway REST API.
 
-The Haskell binary is statically linked againt musl libc, thanks to
-IOHK's
+The Haskell binary is stripped and statically linked againt musl libc,
+thanks to IOHK's
 [`haskell.nix`](https://github.com/input-output-hk/haskell.nix). It is
 also compressed with [`upx`](https://upx.github.io/).
 

@@ -1,6 +1,6 @@
 # wai-handler-hal
 
-![CI Status](https://github.com/tricycle/wai-handler-hal/actions/workflows/haskell-ci.yml/badge.svg)
+[![Haskell-CI](https://github.com/bellroy/wai-handler-hal/actions/workflows/haskell-ci.yml/badge.svg)](https://github.com/bellroy/wai-handler-hal/actions/workflows/haskell-ci.yml)
 
 This library lets you run `wai` `Application`s on AWS Lambda, which
 means you can now use mature web frameworks like
