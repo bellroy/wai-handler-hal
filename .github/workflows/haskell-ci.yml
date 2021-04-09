@@ -180,6 +180,8 @@ jobs:
         run: |
           if [ $((HCNUMVER >= 81000)) -ne 0 ] ; then (cd ${PKGDIR_wai_handler_hal} && hlint src) ; fi
           if [ $((HCNUMVER >= 81000)) -ne 0 ] ; then (cd ${PKGDIR_wai_handler_hal_example} && hlint src) ; fi
+          if [ $((HCNUMVER >= 81000)) -ne 0 ] ; then (cd ${PKGDIR_wai_handler_hal_example} && hlint src-warp) ; fi
+          if [ $((HCNUMVER >= 81000)) -ne 0 ] ; then (cd ${PKGDIR_wai_handler_hal_example} && hlint src-hal) ; fi
       - name: cabal check
         run: |
           cd ${PKGDIR_wai_handler_hal} || false
