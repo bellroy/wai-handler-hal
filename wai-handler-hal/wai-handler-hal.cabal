@@ -54,21 +54,6 @@ library
   exposed-modules: Network.Wai.Handler.Hal
   hs-source-dirs:  src
 
-test-suite spec
-  import:             opts, deps
-  type:               exitcode-stdio-1.0
-  main-is:            Main.hs
-  other-modules:      Network.Wai.Handler.Hal.Test
-  hs-source-dirs:     test
-  ghc-options:        -threaded
-  build-depends:
-    , tasty            ^>=1.4.0.2
-    , tasty-discover   ^>=4.2.2
-    , tasty-hunit      ^>=0.10.0.3
-    , wai-handler-hal
-
-  build-tool-depends: tasty-discover:tasty-discover -any
-
 source-repository head
   type:     git
   location: https://github.com/tricycle/wai-handler-hal.git
