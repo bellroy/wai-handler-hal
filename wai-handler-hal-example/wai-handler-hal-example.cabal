@@ -35,18 +35,36 @@ common deps
   build-depends:
     , aeson            ^>=1.5.6.0
     , base             >=4.12    && <4.15
-    , hal              ^>=0.4.6
     , servant          ^>=0.18.2
     , servant-server   ^>=0.18.2
     , text             ^>=1.2.3
-    , vault            ^>=0.3.1.5
     , wai-handler-hal
 
-executable wai-handler-hal-example
+executable wai-handler-hal-example-hal
   import:         opts, deps
+  hs-source-dirs: src-hal
   main-is:        Main.hs
-  hs-source-dirs: src
+  build-depends:
+    , hal                      ^>=0.4.6
+    , vault                    ^>=0.3.1.5
+    , wai-handler-hal-example
+
   ghc-options:    -threaded
+
+executable wai-handler-hal-example-warp
+  import:         opts, deps
+  hs-source-dirs: src-warp
+  main-is:        Main.hs
+  build-depends:
+    , wai-handler-hal-example
+    , warp                     ^>=3.3.14
+
+  ghc-options:    -threaded
+
+library
+  import:          opts, deps
+  hs-source-dirs:  src
+  exposed-modules: Example
 
 source-repository head
   type:     git

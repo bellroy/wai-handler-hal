@@ -20,7 +20,7 @@ let
       packages.wai-handler-hal-example.dontStrip = false;
     }];
   };
-  lambdaBinary = "${project.wai-handler-hal-example.components.exes.wai-handler-hal-example}/bin/wai-handler-hal-example";
+  lambdaBinary = "${project.wai-handler-hal-example.components.exes.wai-handler-hal-example-hal}/bin/wai-handler-hal-example-hal";
   runtime = pkgs.runCommand "wai-handler-hal-example-runtime" { } ''
     mkdir $out
     ${pkgs.upx}/bin/upx -9 -o $out/bootstrap ${lambdaBinary}

@@ -24,7 +24,7 @@ There are three main subdirectories of interest:
 
 * `wai-handler-hal`: the library that glues `wai` and `hal` together;
 * `wai-handler-hal-example`: A simple `servant` API set up to run on
-  `hal`; and
+  both `hal` and `warp`; and
 * `wai-handler-hal-cdk`: A small [AWS
   CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html)
   application that deploys an API backed by `wai-handler-hal-example`.
