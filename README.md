@@ -61,7 +61,7 @@ requests. Consider defining a second executable target that serves
 your `Application` using `warp`, which you can use for local
 testing.
 
-### Other caveats
+### Caveats
 
 * The Lambda is never told the port that the API Gateway is listening
   on. Most APIs will listen on `443` (HTTPS), so that's what's in this
@@ -145,7 +145,20 @@ endpoint doesn't match). This is done by mapping the paths `/` and
 and CDK provides a Construct which encapsulates this pattern, making
 it extremely simple to deploy.
 
-### Caveats
+### Splitting Servant applications
+
+While it's simplest to back the entire API with a single Lambda, it
+does mean that you risk one Lambda carrying an ever-expanding set of
+IAM permissions. Servant's combinators make it easy to break the API
+into parts that are served by individual Lambdas, which can each have
+the minimal set of permissions attached to their role. If your Servant
+service had endpoints `foo`, `bar`, and `baz`, you'd serve them all
+from Warp with an expression like `Warp.runEnv 8080 . Servant.serve $
+foo :<|> bar :<|> baz`. But `Servant.serve foo`, `Servant.serve bar`,
+and `Servant.serve baz` are also all WAI `Application`s, and can each
+be bundled into distinct Lambda functions using `wai-handler-hal`.
+
+### Other caveats
 
 * The stage name in a path segment is not passed to the Lambda, so it
   is not passed to the `wai` `Application`. An invoke URL like
