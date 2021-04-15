@@ -12,7 +12,8 @@ description:
   More details, including deployment advice, are available in the
   repository's @README.md@.
 
-bug-reports:        http://github.com/tricycle/wai-handler-hal/issues
+homepage:           http://github.com/bellroy/wai-handler-hal
+bug-reports:        http://github.com/bellroy/wai-handler-hal/issues
 license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Bellroy Tech Team <haskell@bellroy.com>
@@ -55,4 +56,4 @@ library
 
 source-repository head
   type:     git
-  location: https://github.com/tricycle/wai-handler-hal.git
+  location: https://github.com/bellroy/wai-handler-hal.git

@@ -8,7 +8,7 @@ description:
   binary which can run as a Lambda Proxy Integration of an AWS API
   Gateway REST API.
 
-bug-reports:        http://github.com/tricycle/wai-handler-hal/issues
+bug-reports:        http://github.com/bellroy/wai-handler-hal/issues
 license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Bellroy Tech Team <haskell@bellroy.com>
@@ -67,4 +67,4 @@ library
 
 source-repository head
   type:     git
-  location: https://github.com/tricycle/wai-handler-hal.git
+  location: https://github.com/bellroy/wai-handler-hal.git
