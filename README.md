@@ -8,7 +8,7 @@ means you can now use mature web frameworks like
 
 The main entry point is `Network.Wai.Handler.Hal.run`, which wraps an
 `Application` and returns a function that can be passed to `hal`'s
-`AWS.Lambda.Runtime.mRuntimeWithContext**.
+`AWS.Lambda.Runtime.mRuntime`**.
 
 **NOTE:** The function returned by `Network.Wai.Handler.Hal.run` is
 only for [Lambda Proxy
@@ -38,9 +38,7 @@ executable that serves your application with
 code looks something like this:
 
 ```haskell
-import AWS.Lambda.Context (runReaderTLambdaContext)
-import AWS.Lambda.Runtime (mRuntimeWithContext)
-import qualified Data.Vault.Lazy as Vault
+import AWS.Lambda.Runtime (mRuntime)
 import Network.Wai (Application)
 import qualified Network.Wai.Handler.Hal as WaiHandler
 
@@ -48,9 +46,7 @@ app :: Application
 app = undefined -- From Servant or wherever else
 
 main :: IO ()
-main =
-  runReaderTLambdaContext . mRuntimeWithContext $
-    WaiHandler.run Vault.empty 443 app
+main = mRuntime $ WaiHandler.run app
 ```
 
 ### Local testing

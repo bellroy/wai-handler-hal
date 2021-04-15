@@ -5,10 +5,9 @@ synopsis:           Wrap WAI applications to run on AWS Lambda
 description:
   This library provides a function 'Network.Wai.Handler.Hal.run' to
   lift a @wai@ 'Network.Wai.Application' into a function that can be
-  passed to @hal@'s 'AWS.Lambda.Runtime.mRuntimeWithContext'. This
-  allows you to run applications written in mature web frameworks
-  (e.g., @servant@) on AWS Lambda, as proxy integrations of API
-  Gateway Rest APIs.
+  passed to @hal@'s 'AWS.Lambda.Runtime.mRuntime'. This allows you to
+  run applications written in mature web frameworks (e.g., @servant@)
+  on AWS Lambda, as proxy integrations of API Gateway Rest APIs.
   .
   More details, including deployment advice, are available in the
   repository's @README.md@.
@@ -41,7 +40,7 @@ common deps
     , base64-bytestring     ^>=1.1.0.0
     , bytestring            ^>=0.10.8
     , case-insensitive      ^>=1.2.1.0
-    , hal                   ^>=0.4.6
+    , hal                   ^>=0.4.7
     , http-types            ^>=0.12.3
     , network               ^>=3.1.1.1
     , text                  ^>=1.2.3

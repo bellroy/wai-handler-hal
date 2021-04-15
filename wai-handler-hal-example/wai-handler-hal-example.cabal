@@ -45,8 +45,7 @@ executable wai-handler-hal-example-hal
   hs-source-dirs: src-hal
   main-is:        Main.hs
   build-depends:
-    , hal                      ^>=0.4.6
-    , vault                    ^>=0.3.1.5
+    , hal                      ^>=0.4.7
     , wai-handler-hal-example
 
   ghc-options:    -threaded

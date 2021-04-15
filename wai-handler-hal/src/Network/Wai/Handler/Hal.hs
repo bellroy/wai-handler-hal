@@ -12,14 +12,13 @@
 -- Maintainer  : Bellroy Tech Team <haskell@bellroy.com>
 -- Stability   : experimental
 --
--- Lifts a 'Network.Wai.Application' so that it can be run by
--- 'AWS.Lambda.Runtime.mRuntimeWithContext'. The glue code will look
+-- Lifts a 'Network.Wai.Application' so that it can be run using
+-- 'AWS.Lambda.Runtime.mRuntime' or
+-- 'AWS.Lambda.Runtime.mRuntimeWithContext''. The glue code will look
 -- something like this:
 --
 -- @
--- import AWS.Lambda.Context (runReaderTLambdaContext)
--- import AWS.Lambda.Runtime (mRuntimeWithContext)
--- import qualified Data.Vault.Lazy as Vault
+-- import AWS.Lambda.Runtime (mRuntime)
 -- import Network.Wai (Application)
 -- import qualified Network.Wai.Handler.Hal as WaiHandler
 --
@@ -27,12 +26,17 @@
 -- app = undefined -- From Servant or wherever else
 --
 -- main :: IO ()
--- main =
---   runReaderTLambdaContext . mRuntimeWithContext $
---     WaiHandler.run Vault.empty 443 app
+-- main = mRuntime $ WaiHandler.run app
 -- @
-module Network.Wai.Handler.Hal (run, toWaiRequest, fromWaiResponse) where
+module Network.Wai.Handler.Hal
+  ( run,
+    runWithContext,
+    toWaiRequest,
+    fromWaiResponse,
+  )
+where
 
+import AWS.Lambda.Context (LambdaContext)
 import qualified AWS.Lambda.Events.ApiGateway.ProxyRequest as HalRequest
   ( RequestContext (identity),
   )
@@ -48,6 +52,7 @@ import qualified Data.ByteString.Builder as Builder
 import qualified Data.ByteString.Builder.Extra as Builder
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.CaseInsensitive as CI
+import Data.Function ((&))
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as H
 import qualified Data.IORef as IORef
@@ -55,7 +60,8 @@ import Data.List (foldl')
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import Data.Vault.Lazy (Vault)
+import Data.Vault.Lazy (Key, Vault)
+import qualified Data.Vault.Lazy as Vault
 import Network.HTTP.Types.Header
   ( HeaderName,
     ResponseHeaders,
@@ -79,27 +85,72 @@ import qualified Network.Wai as Wai
 import qualified Network.Wai.Internal as Wai
 import System.IO (IOMode (..), SeekMode (..), hSeek, withFile)
 
--- | Convert a Wai 'Wai.Application' into a function that can be run
--- by Hal's 'AWS.Lambda.Runtime.mRuntimeWithContext'.
+-- | Convert a Wai 'Network.Wai.Application' into a function that can
+-- be run by Hal's 'AWS.Lambda.Runtime.mRuntime'. This is the simplest
+-- form, and probably all that you'll need. See 'runWithContext' if
+-- you have more complex needs.
 run ::
   MonadIO m =>
-  -- | Vault of values to share between the application and any
-  -- middleware. You can pass in @Vault.empty@, or @mempty@ if you
-  -- don't want to depend on @vault@ directly.
-  Vault ->
-  -- | API Gateway doesn't tell us the port it's listening on. This is
-  -- almost always going to be 443 (HTTPS).
-  PortNumber ->
   Wai.Application ->
-  -- | We force 'HalRequest.NoAuthorizer' because WAI apps can't know
-  -- about Lambda contexts, and it avoids an "ambiguous type variable"
-  -- error at the use site.
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
-run vault port app req = liftIO $ do
-  waiReq <- toWaiRequest vault port req
+run app req = liftIO $ do
+  waiReq <- toWaiRequest Vault.empty 443 req
   responseRef <- IORef.newIORef Nothing
   Wai.ResponseReceived <- app waiReq $ \waiResp ->
+    Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
+  Just waiResp <- IORef.readIORef responseRef
+  fromWaiResponse waiResp
+
+-- | Convert a Wai 'Network.Wai.Application' into a function that can
+-- be run by Hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
+-- function exposes all the configurable knobs.
+runWithContext ::
+  MonadIO m =>
+  -- | Vault of values to share between the application and any
+  -- middleware. You can pass in 'Data.Vault.Lazy.empty', or 'mempty'
+  -- if you don't want to depend on @vault@ directly.
+  Vault ->
+  -- | API Gateway doesn't tell us the port it's listening on, so you
+  -- have to tell it yourself. This is almost always going to be 443
+  -- (HTTPS).
+  PortNumber ->
+  -- | We pass two 'Data.Vault.Lazy.Vault' keys to the callback that
+  -- provides the 'Network.Wai.Application'. This allows the
+  -- application to look into the 'Data.Vault.Lazy.Vault' part of each
+  -- request and read @hal@ data structures, if necessary:
+  --
+  -- * The @'Key' 'AWS.Lambda.Runtime.LambdaContext'@ provides
+  --   information about the Lambda invocation, function, and
+  --   execution environment; and
+  --
+  -- * The @'Key'
+  -- ('AWS.Lambda.Events.ApiGateway.ProxyRequest.ProxyRequest'
+  -- 'AWS.Lambda.Events.ApiGateway.ProxyRequest.NoAuthorizer')@
+  -- provides the unmodified API Gateway representation of the HTTP
+  -- request.
+  ( Key LambdaContext ->
+    Key (HalRequest.ProxyRequest HalRequest.NoAuthorizer) ->
+    Wai.Application
+  ) ->
+  LambdaContext ->
+  -- | We force
+  -- 'AWS.Lambda.Events.ApiGateway.ProxyRequest.NoAuthorizer' because
+  -- it's a type alias for 'Data.Aeson.Value' (i.e., should always
+  -- parse), and it avoids an "ambiguous type variable" error at the
+  -- use site.
+  HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
+  m HalResponse.ProxyResponse
+runWithContext vault port app ctx req = liftIO $ do
+  contextKey <- Vault.newKey
+  requestKey <- Vault.newKey
+  let vault' =
+        vault
+          & Vault.insert contextKey ctx
+          & Vault.insert requestKey req
+  waiReq <- toWaiRequest vault' port req
+  responseRef <- IORef.newIORef Nothing
+  Wai.ResponseReceived <- app contextKey requestKey waiReq $ \waiResp ->
     Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
   Just waiResp <- IORef.readIORef responseRef
   fromWaiResponse waiResp
@@ -107,7 +158,7 @@ run vault port app req = liftIO $ do
 -- | Convert the request sent to a Lambda serving an API Gateway proxy
 -- integration into a WAI request.
 --
--- **Note:** We aren't told the HTTP version the client is using, so
+-- __Note:__ We aren't told the HTTP version the client is using, so
 -- we assume HTTP 1.1.
 toWaiRequest ::
   Vault ->
