@@ -87,8 +87,9 @@ this.
 
 IOHK's [`haskell.nix`](https://github.com/input-output-hk/haskell.nix)
 can build static Haskell binaries by cross-compiling against musl
-libc. This is convenient, but consider copyleft implications if you
-are distributing the binaries to other people.
+libc. This is convenient, but consider copyleft implications (of
+`libgmp`; `wai-handler-hal` is BSD-3-Clause) if you are distributing
+the binaries to other people.
 
 #### Dynamic linking
 
