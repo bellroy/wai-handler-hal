@@ -8,7 +8,7 @@ means you can now use mature web frameworks like
 
 The main entry point is `Network.Wai.Handler.Hal.run`, which wraps an
 `Application` and returns a function that can be passed to `hal`'s
-`AWS.Lambda.Runtime.mRuntime`**.
+`AWS.Lambda.Runtime.mRuntime`.
 
 **NOTE:** The function returned by `Network.Wai.Handler.Hal.run` is
 only for [Lambda Proxy
