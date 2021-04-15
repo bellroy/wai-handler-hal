@@ -12,13 +12,13 @@
 -- Maintainer  : Bellroy Tech Team <haskell@bellroy.com>
 -- Stability   : experimental
 --
--- Lifts a 'Network.Wai.Application' so that it can be run using
+-- Lifts an 'Wai.Application' so that it can be run using
 -- 'AWS.Lambda.Runtime.mRuntime' or
 -- 'AWS.Lambda.Runtime.mRuntimeWithContext''. The glue code will look
 -- something like this:
 --
 -- @
--- import AWS.Lambda.Runtime (mRuntime)
+-- import AWS.Lambda.Runtime ('AWS.Lambda.Runtime.mRuntime')
 -- import Network.Wai (Application)
 -- import qualified Network.Wai.Handler.Hal as WaiHandler
 --
@@ -26,7 +26,7 @@
 -- app = undefined -- From Servant or wherever else
 --
 -- main :: IO ()
--- main = mRuntime $ WaiHandler.run app
+-- main = 'AWS.Lambda.Runtime.mRuntime' $ WaiHandler.'run' app
 -- @
 module Network.Wai.Handler.Hal
   ( run,
@@ -85,8 +85,8 @@ import qualified Network.Wai as Wai
 import qualified Network.Wai.Internal as Wai
 import System.IO (IOMode (..), SeekMode (..), hSeek, withFile)
 
--- | Convert a Wai 'Network.Wai.Application' into a function that can
--- be run by Hal's 'AWS.Lambda.Runtime.mRuntime'. This is the simplest
+-- | Convert a WAI 'Wai.Application' into a function that can
+-- be run by hal's 'AWS.Lambda.Runtime.mRuntime'. This is the simplest
 -- form, and probably all that you'll need. See 'runWithContext' if
 -- you have more complex needs.
 run ::
@@ -102,43 +102,39 @@ run app req = liftIO $ do
   Just waiResp <- IORef.readIORef responseRef
   fromWaiResponse waiResp
 
--- | Convert a Wai 'Network.Wai.Application' into a function that can
--- be run by Hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
+-- | Convert a WAI 'Wai.Application' into a function that can
+-- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
 -- function exposes all the configurable knobs.
 runWithContext ::
   MonadIO m =>
   -- | Vault of values to share between the application and any
-  -- middleware. You can pass in 'Data.Vault.Lazy.empty', or 'mempty'
-  -- if you don't want to depend on @vault@ directly.
+  -- middleware. You can pass in @Data.Vault.Lazy.'Vault.empty'@, or
+  -- 'mempty' if you don't want to depend on @vault@ directly.
   Vault ->
   -- | API Gateway doesn't tell us the port it's listening on, so you
   -- have to tell it yourself. This is almost always going to be 443
   -- (HTTPS).
   PortNumber ->
-  -- | We pass two 'Data.Vault.Lazy.Vault' keys to the callback that
-  -- provides the 'Network.Wai.Application'. This allows the
-  -- application to look into the 'Data.Vault.Lazy.Vault' part of each
-  -- request and read @hal@ data structures, if necessary:
+  -- | We pass two 'Vault' keys to the callback that provides the
+  -- 'Wai.Application'. This allows the application to look into the
+  -- 'Vault' part of each request and read @hal@ data structures, if
+  -- necessary:
   --
-  -- * The @'Key' 'AWS.Lambda.Runtime.LambdaContext'@ provides
+  -- * The @'Key' 'LambdaContext'@ provides
   --   information about the Lambda invocation, function, and
   --   execution environment; and
   --
-  -- * The @'Key'
-  -- ('AWS.Lambda.Events.ApiGateway.ProxyRequest.ProxyRequest'
-  -- 'AWS.Lambda.Events.ApiGateway.ProxyRequest.NoAuthorizer')@
-  -- provides the unmodified API Gateway representation of the HTTP
-  -- request.
+  -- * The @'Key' ('HalRequest.ProxyRequest'
+  -- 'HalRequest.NoAuthorizer')@ provides the unmodified API Gateway
+  -- representation of the HTTP request.
   ( Key LambdaContext ->
     Key (HalRequest.ProxyRequest HalRequest.NoAuthorizer) ->
     Wai.Application
   ) ->
   LambdaContext ->
-  -- | We force
-  -- 'AWS.Lambda.Events.ApiGateway.ProxyRequest.NoAuthorizer' because
-  -- it's a type alias for 'Data.Aeson.Value' (i.e., should always
-  -- parse), and it avoids an "ambiguous type variable" error at the
-  -- use site.
+  -- | We force 'HalRequest.NoAuthorizer' because it's a type alias
+  -- for 'Data.Aeson.Value' (i.e., should always parse), and it avoids
+  -- an "ambiguous type variable" error at the use site.
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
 runWithContext vault port app ctx req = liftIO $ do
@@ -241,7 +237,7 @@ getHeader :: HeaderName -> HalRequest.ProxyRequest a -> Maybe ByteString
 getHeader h =
   fmap T.encodeUtf8 . H.lookup (CI.map T.decodeUtf8 h) . HalRequest.headers
 
--- | Convert a Wai 'Wai.Response' into a Hal
+-- | Convert a WAI 'Wai.Response' into a hal
 -- 'HalResponse.ProxyResponse'.
 fromWaiResponse :: Wai.Response -> IO HalResponse.ProxyResponse
 fromWaiResponse (Wai.ResponseFile status headers path mFilePart) = do
