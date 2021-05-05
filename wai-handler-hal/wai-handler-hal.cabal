@@ -38,16 +38,16 @@ common opts
 common deps
   build-depends:
     , base                  >=4.12    && <4.15
-    , base64-bytestring     ^>=1.1.0.0
+    , base64-bytestring     ^>=1.0.0.0
     , bytestring            ^>=0.10.8
-    , case-insensitive      ^>=1.2.1.0
+    , case-insensitive      ^>=1.2.0.0
     , hal                   ^>=0.4.7
     , http-types            ^>=0.12.3
-    , network               ^>=3.1.1.1
+    , network               ^>=2.8.0.0
     , text                  ^>=1.2.3
-    , unordered-containers  ^>=0.2.13
-    , vault                 ^>=0.3.1.5
-    , wai                   ^>=3.2.3
+    , unordered-containers  ^>=0.2.10.0
+    , vault                 ^>=0.3.1.0
+    , wai                   ^>=3.2.2
 
 library
   import:          opts, deps
