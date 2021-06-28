@@ -2,12 +2,12 @@
 # for deployment. This expression produces a directory containing the
 # `bootstrap` executable: CDK is smart enough to zip it up for deployment.
 { sources ? import ../../nix/sources.nix { }
-, compiler-nix-name ? "ghc8104"
+, compiler-nix-name ? "ghc8105"
 }:
 let
   haskellNix = import sources."haskell.nix" { };
-  pkgs = haskellNix.pkgs;
-  pkgsMusl = haskellNix.pkgs.pkgsCross.musl64;
+  pkgs = haskellNix.pkgs-unstable;
+  pkgsMusl = haskellNix.pkgs-unstable.pkgsCross.musl64;
   project = pkgsMusl.haskell-nix.project {
     inherit compiler-nix-name;
     src = pkgs.haskell-nix.haskellLib.cleanGit {

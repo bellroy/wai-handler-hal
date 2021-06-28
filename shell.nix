@@ -1,5 +1,5 @@
 { sources ? import ./nix/sources.nix { }
-, compiler-nix-name ? "ghc8104"
+, compiler-nix-name ? "ghc8105"
 }:
 let
   project = import ./. { inherit sources compiler-nix-name; };

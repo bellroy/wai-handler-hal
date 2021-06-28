@@ -16,7 +16,7 @@ pkgs.dockerTools.buildImage {
   fromImage = pkgs.dockerTools.pullImage {
     imageName = "amazon/aws-lambda-provided";
     imageDigest = "sha256:4202908189cc596b5a8a3f45c46dfca7f225d152161a71cc4ad8f426b2478223";
-    sha256 = "1kdzyl8yv4f0ihpgw0y62q8zrhcn0nd4s1fimp05jcbc7l37lfqz";
+    sha256 = "0zfz292w535fcih7ygijgm3ib0bywrwszrimk78sh4xpg8g1kq2f";
   };
 
   contents =
