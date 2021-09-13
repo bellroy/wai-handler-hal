@@ -175,8 +175,6 @@ toWaiRequest vault port req = do
           . HalRequest.sourceIp
           . HalRequest.identity
           $ HalRequest.requestContext req
-  print $ HalRequest.path req
-  print pathSegments
   sourceAddr : _ <- NS.getAddrInfo (Just hints) (Just sourceIp) (Just $ show port)
   body <- returnChunks $ HalRequest.body req
   let waiReq =
@@ -210,7 +208,6 @@ toWaiRequest vault port req = do
             Wai.requestHeaderReferer = getHeader hReferer req,
             Wai.requestHeaderUserAgent = getHeader hUserAgent req
           }
-  print waiReq
   pure waiReq
 
 -- | Unpack a lazy 'BL.ByteString' into its chunks, and return an IO
