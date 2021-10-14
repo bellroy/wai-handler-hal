@@ -1,12 +1,16 @@
-import * as cdk from '@aws-cdk/core';
-import * as apigateway from '@aws-cdk/aws-apigateway';
-import * as lambda from '@aws-cdk/aws-lambda';
+import { Construct } from 'constructs';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import {
+  aws_apigateway as apigateway,
+  aws_lambda as lambda
+} from 'aws-cdk-lib';
 
-export class WaiHandlerHalCdkStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class WaiHandlerHalCdkStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const exampleLambda = new lambda.Function(this, 'wai-handler-hal-example', {
+      architecture: lambda.Architecture.X86_64,
       code: lambda.Code.fromAsset('runtime/result'),
       handler: 'UNUSED',
       runtime: lambda.Runtime.PROVIDED_AL2,
