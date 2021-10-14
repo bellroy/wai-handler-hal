@@ -5,46 +5,10 @@
         "homepage": "https://input-output-hk.github.io/haskell.nix",
         "owner": "input-output-hk",
         "repo": "haskell.nix",
-        "rev": "e72866fdb43d4f67b7a567db4f5dcbb822c4fcbc",
-        "sha256": "1fckb5mlyafvrf36w7vlb4snsd6ld0mg6nj053ljr0n6r8692iki",
+        "rev": "3720ee48fde907036a2be5081cceac1e1d360f25",
+        "sha256": "1jdx9pr2jwzl42rif71z0sbfd301bzm5knfj72vdk12gjajbk8nf",
         "type": "tarball",
-        "url": "https://github.com/input-output-hk/haskell.nix/archive/e72866fdb43d4f67b7a567db4f5dcbb822c4fcbc.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "niv": {
-        "branch": "master",
-        "description": "Easy dependency management for Nix projects",
-        "homepage": "https://github.com/nmattia/niv",
-        "owner": "nmattia",
-        "repo": "niv",
-        "rev": "e0ca65c81a2d7a4d82a189f1e23a48d59ad42070",
-        "sha256": "1pq9nh1d8nn3xvbdny8fafzw87mj7gsmp6pxkdl65w2g18rmcmzx",
-        "type": "tarball",
-        "url": "https://github.com/nmattia/niv/archive/e0ca65c81a2d7a4d82a189f1e23a48d59ad42070.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "nixpkgs": {
-        "branch": "master",
-        "description": "Nix Packages collection",
-        "homepage": "",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "dbf5cd2d90cbf8b281c1938632b431d1e61d3249",
-        "sha256": "0ak60qwizcadqx57k4609ifzx18bnz0vdlm75h5i0pd7fp3b2r40",
-        "type": "tarball",
-        "url": "https://github.com/nixos/nixpkgs/archive/dbf5cd2d90cbf8b281c1938632b431d1e61d3249.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "ormolu": {
-        "branch": "master",
-        "description": "A formatter for Haskell source code",
-        "homepage": null,
-        "owner": "tweag",
-        "repo": "ormolu",
-        "rev": "98617071305f996ad10a6b767ca0c2ae65b1da39",
-        "sha256": "1camqj1pmr383w6lpvgd2fhvwvbz3iyvflislr0ja6gig2p2lhca",
-        "type": "tarball",
-        "url": "https://github.com/tweag/ormolu/archive/98617071305f996ad10a6b767ca0c2ae65b1da39.tar.gz",
+        "url": "https://github.com/input-output-hk/haskell.nix/archive/3720ee48fde907036a2be5081cceac1e1d360f25.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

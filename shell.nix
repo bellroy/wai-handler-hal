@@ -1,23 +1,28 @@
 { sources ? import ./nix/sources.nix { }
-, compiler-nix-name ? "ghc8105"
+, compiler-nix-name ? "ghc8107"
+, withHoogle ? false
 }:
 let
   project = import ./. { inherit sources compiler-nix-name; };
-  niv = (import sources.niv { }).niv;
-  ormolu = (import sources.ormolu { }).ormolu;
   pkgs = (import sources."haskell.nix" { }).pkgs;
-  nixpkgs-fmt = pkgs.nixpkgs-fmt;
-  nodejs = pkgs.nodejs;
-  npm = pkgs.nodePackages.npm;
 in
 project.shellFor {
+  inherit withHoogle;
   packages = ps: with ps; [ wai-handler-hal wai-handler-hal-example ];
+
   tools = {
     cabal-fmt = { };
     haskell-ci = {
       modules = [{ reinstallableLibGhc = true; }];
     };
     hlint = { };
+    ormolu = { };
   };
-  buildInputs = [ niv nixpkgs-fmt nodejs npm ormolu ];
+
+  buildInputs = with pkgs; [
+    niv
+    nixpkgs-fmt
+    nodejs
+    nodePackages.npm
+  ];
 }
