@@ -55,7 +55,6 @@ import qualified Data.ByteString.Builder.Extra as Builder
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.CaseInsensitive as CI
 import Data.Function ((&))
-import Data.Functor ((<&>))
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as H
 import qualified Data.IORef as IORef
@@ -86,7 +85,14 @@ import Network.Socket (PortNumber)
 import qualified Network.Socket as NS
 import qualified Network.Wai as Wai
 import qualified Network.Wai.Internal as Wai
-import System.IO (IOMode (..), SeekMode (..), hSeek, withFile)
+import System.IO
+  ( IOMode (..),
+    SeekMode (..),
+    hPutStrLn,
+    hSeek,
+    stderr,
+    withFile,
+  )
 
 -- | Convert a WAI 'Wai.Application' into a function that can
 -- be run by hal's 'AWS.Lambda.Runtime.mRuntime'. This is the simplest
@@ -173,7 +179,7 @@ toWaiRequest vault port req = do
             NS.addrFamily = NS.AF_INET,
             NS.addrSocketType = NS.Stream
           }
-      source =
+      sourceIp =
         T.unpack
           . HalRequest.sourceIp
           . HalRequest.identity
@@ -184,10 +190,17 @@ toWaiRequest vault port req = do
   sourceHost <-
     tryJust
       (Just @IOException)
-      (NS.getAddrInfo (Just hints) (Just source) (Just $ show port))
-      <&> \case
-        Right (s : _) -> NS.addrAddress s
-        _ -> NS.SockAddrInet port $ NS.tupleToHostAddress (127, 0, 0, 1)
+      (NS.getAddrInfo (Just hints) (Just sourceIp) (Just $ show port))
+      >>= \case
+        Right (s : _) -> pure $ NS.addrAddress s
+        _ -> do
+          hPutStrLn stderr $
+            mconcat
+              [ "Cannot convert sourceIp ",
+                show sourceIp,
+                " to address; assuming 127.0.0.1"
+              ]
+          pure . NS.SockAddrInet port $ NS.tupleToHostAddress (127, 0, 0, 1)
   body <- returnChunks $ HalRequest.body req
   let waiReq =
         Wai.Request
