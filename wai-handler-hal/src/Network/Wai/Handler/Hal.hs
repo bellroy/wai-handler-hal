@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TypeApplications #-}
 {-# OPTIONS_GHC -Wno-deprecations #-}
 
 -- |
@@ -44,6 +45,7 @@ import qualified AWS.Lambda.Events.ApiGateway.ProxyRequest as HalRequest hiding
   ( RequestContext (..),
   )
 import qualified AWS.Lambda.Events.ApiGateway.ProxyResponse as HalResponse
+import Control.Exception (IOException, tryJust)
 import Control.Monad.IO.Class (MonadIO (..))
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
@@ -83,7 +85,14 @@ import Network.Socket (PortNumber)
 import qualified Network.Socket as NS
 import qualified Network.Wai as Wai
 import qualified Network.Wai.Internal as Wai
-import System.IO (IOMode (..), SeekMode (..), hSeek, withFile)
+import System.IO
+  ( IOMode (..),
+    SeekMode (..),
+    hPutStrLn,
+    hSeek,
+    stderr,
+    withFile,
+  )
 
 -- | Convert a WAI 'Wai.Application' into a function that can
 -- be run by hal's 'AWS.Lambda.Runtime.mRuntime'. This is the simplest
@@ -175,7 +184,23 @@ toWaiRequest vault port req = do
           . HalRequest.sourceIp
           . HalRequest.identity
           $ HalRequest.requestContext req
-  sourceAddr : _ <- NS.getAddrInfo (Just hints) (Just sourceIp) (Just $ show port)
+  -- Test invokes from the API Gateway console pass a "sourceIp" field
+  -- of "test-invoke-source-ip". If the getAddrInfo call fails, just
+  -- assume localhost.
+  sourceHost <-
+    tryJust
+      (Just @IOException)
+      (NS.getAddrInfo (Just hints) (Just sourceIp) (Just $ show port))
+      >>= \case
+        Right (s : _) -> pure $ NS.addrAddress s
+        _ -> do
+          hPutStrLn stderr $
+            mconcat
+              [ "Cannot convert sourceIp ",
+                show sourceIp,
+                " to address; assuming 127.0.0.1"
+              ]
+          pure . NS.SockAddrInet port $ NS.tupleToHostAddress (127, 0, 0, 1)
   body <- returnChunks $ HalRequest.body req
   let waiReq =
         Wai.Request
@@ -196,7 +221,7 @@ toWaiRequest vault port req = do
                 . H.toList
                 $ HalRequest.multiValueHeaders req,
             Wai.isSecure = True,
-            Wai.remoteHost = NS.addrAddress sourceAddr,
+            Wai.remoteHost = sourceHost,
             Wai.pathInfo = pathSegments,
             Wai.queryString = query,
             Wai.requestBody = body,

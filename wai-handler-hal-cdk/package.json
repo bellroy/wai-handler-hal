@@ -15,16 +15,15 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.96.0",
+    "@aws-cdk/assert": "^2.0.0-rc.1",
     "@types/node": "10.17.27",
-    "aws-cdk": "1.96.0",
+    "aws-cdk-lib": "^2.0.0-rc.1",
+    "cdk": "^2.0.0-rc.1",
     "ts-node": "^9.0.0",
-    "typescript": "~3.9.7"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.98.0",
-    "@aws-cdk/aws-lambda": "^1.98.0",
-    "@aws-cdk/core": "1.96.0",
-    "source-map-support": "^0.5.16"
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.20"
   }
 }
