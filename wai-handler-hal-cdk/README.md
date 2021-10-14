@@ -18,7 +18,7 @@ following commands from inside a `nix-shell`:
 * `npm install`
 * `npm run cdk bootstrap` (only if you've never used CDK on your AWS
   account before)
-* `(cd runtime && nix build)` (build the Lambda binary where CDK can
+* `(cd runtime && nix build -f .)` (build the Lambda binary where CDK can
   find it)
 * `npm run cdk deploy` (deploy to AWS)
 
