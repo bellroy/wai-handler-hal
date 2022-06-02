@@ -1,5 +1,9 @@
 # Revision history for wai-handler-hal
 
+## 0.1.2.0 -- 2022-06-03
+
+* Fix construction of `rawPathInfo`.
+
 ## 0.1.1.0 -- 2021-10-14
 
 * When API Gateway sends nonsense IPs during a test invocation, sub in
