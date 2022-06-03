@@ -209,7 +209,7 @@ toWaiRequest vault port req = do
             Wai.rawPathInfo =
               BL.toStrict
                 . Builder.toLazyByteString
-                $ encodePath pathSegments query,
+                $ encodePath pathSegments [],
             Wai.rawQueryString = case query of
               [] -> ""
               _ -> renderQuery True query,

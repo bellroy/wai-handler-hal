@@ -1,0 +1,89 @@
+{
+    "resource": "/{proxy+}",
+    "path": "/foo/bar/baz",
+    "httpMethod": "GET",
+    "headers": {
+        "accept": "application/json",
+        "Host": "ffffffffff.execute-api.us-east-1.amazonaws.com",
+        "User-Agent": "curl/7.83.1",
+        "X-Amzn-Trace-Id": "Root=1-11111111-111111111111111111111111",
+        "X-Forwarded-For": "123.123.123.123",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "accept": [
+            "application/json"
+        ],
+        "Host": [
+            "ffffffffff.execute-api.us-east-1.amazonaws.com"
+        ],
+        "User-Agent": [
+            "curl/7.83.1"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-11111111-111111111111111111111111"
+        ],
+        "X-Forwarded-For": [
+            "123.123.123.123"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": {
+        "MaxResultsPerPage": "100",
+        "PostedAfter": "2022-05-31T22:16:43Z",
+        "PostedBefore": "2022-05-31T23:16:43Z"
+    },
+    "multiValueQueryStringParameters": {
+        "MaxResultsPerPage": [
+            "100"
+        ],
+        "PostedAfter": [
+            "2022-05-31T22:16:43Z"
+        ],
+        "PostedBefore": [
+            "2022-05-31T23:16:43Z"
+        ]
+    },
+    "pathParameters": {
+        "proxy": "foo/bar/baz"
+    },
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "ffffff",
+        "resourcePath": "/{proxy+}",
+        "httpMethod": "GET",
+        "extendedRequestId": "AAAAAAAAAAAAAAA=",
+        "requestTime": "02/Jun/2022:08:01:41 +0000",
+        "path": "/test/foo/bar/baz",
+        "accountId": "123456789012",
+        "protocol": "HTTP/1.1",
+        "stage": "test",
+        "domainPrefix": "ffffffffff",
+        "requestTimeEpoch": 1654156901017,
+        "requestId": "0bb0f1d1-5063-45ab-a0dc-4d10279eb9e1",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "123.123.123.123",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "curl/7.83.1",
+            "user": null
+        },
+        "domainName": "ffffffffff.execute-api.us-east-1.amazonaws.com",
+        "apiId": "ffffffffff"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

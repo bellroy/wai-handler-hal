@@ -1,0 +1,62 @@
+Request
+    { requestMethod = "GET"
+    , httpVersion = HTTP/1.1
+    , rawPathInfo = "/foo/bar/baz"
+    , rawQueryString = "?PostedBefore=2022-05-31T23%3A16%3A43Z&MaxResultsPerPage=100&PostedAfter=2022-05-31T22%3A16%3A43Z"
+    , requestHeaders =
+        [
+            ( "X-Forwarded-Port"
+            , "443"
+            )
+        ,
+            ( "Host"
+            , "ffffffffff.execute-api.us-east-1.amazonaws.com"
+            )
+        ,
+            ( "accept"
+            , "application/json"
+            )
+        ,
+            ( "X-Forwarded-Proto"
+            , "https"
+            )
+        ,
+            ( "User-Agent"
+            , "curl/7.83.1"
+            )
+        ,
+            ( "X-Amzn-Trace-Id"
+            , "Root=1-11111111-111111111111111111111111"
+            )
+        ,
+            ( "X-Forwarded-For"
+            , "123.123.123.123"
+            )
+        ]
+    , isSecure = True
+    , remoteHost = 123.123.123.123:443
+    , pathInfo =
+        [ "foo"
+        , "bar"
+        , "baz"
+        ]
+    , queryString =
+        [
+            ( "PostedBefore"
+            , Just "2022-05-31T23:16:43Z"
+            )
+        ,
+            ( "MaxResultsPerPage"
+            , Just "100"
+            )
+        ,
+            ( "PostedAfter"
+            , Just "2022-05-31T22:16:43Z"
+            )
+        ]
+    , requestBody = <IO ByteString>
+    , vault = <Vault>
+    , requestBodyLength = KnownLength 0
+    , requestHeaderHost = Just "ffffffffff.execute-api.us-east-1.amazonaws.com"
+    , requestHeaderRange = Nothing
+    }
