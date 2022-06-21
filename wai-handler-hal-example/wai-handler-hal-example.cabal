@@ -34,7 +34,7 @@ common opts
 
 common deps
   build-depends:
-    , aeson            ^>=1.5.6.0 || ^>=2.0
+    , aeson            ^>=1.5.6.0 || >=2.0 && < 2.2
     , base             >=4.12    && <4.17
     , servant          >=0.18.2  && <0.20
     , servant-server   >=0.18.2  && <0.20
