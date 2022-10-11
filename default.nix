@@ -1,5 +1,5 @@
 { sources ? import ./nix/sources.nix { }
-, compiler-nix-name ? "ghc8107"
+, compiler-nix-name ? "ghc922"
 }:
 let
   haskellNix = import sources."haskell.nix" { };
