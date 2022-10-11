@@ -2,7 +2,7 @@
 # for deployment. This expression produces a directory containing the
 # `bootstrap` executable: CDK is smart enough to zip it up for deployment.
 { sources ? import ../../nix/sources.nix { }
-, compiler-nix-name ? "ghc8107"
+, compiler-nix-name ? "ghc922"
 , architecture ? "x86_64"
 }:
 let
