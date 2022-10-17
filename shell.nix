@@ -10,7 +10,10 @@ project.shellFor {
   inherit withHoogle;
 
   packages = ps: with ps; [ wai-handler-hal wai-handler-hal-example ];
-  tools.haskell-ci = "latest";
+  tools = {
+    haskell-ci = "latest";
+    haskell-language-server = "latest";
+  };
 
   buildInputs = with pkgs; [
     niv

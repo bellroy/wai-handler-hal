@@ -1,6 +1,0 @@
-cradle:
-  cabal:
-    - path: "src"
-      component: "lib:aws-arn"
-    - path: "test"
-      component: "aws-arn:test:spec"
