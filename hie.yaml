@@ -1,0 +1,16 @@
+cradle:
+  cabal:
+    - path: "wai-handler-hal/src"
+      component: "lib:wai-handler-hal"
+
+    - path: "wai-handler-hal/test"
+      component: "wai-handler-hal:test:wai-handler-hal-tests"
+
+    - path: "wai-handler-hal-example/src-hal/Main.hs"
+      component: "wai-handler-hal-example:exe:wai-handler-hal-example-hal"
+
+    - path: "wai-handler-hal-example/src-warp/Main.hs"
+      component: "wai-handler-hal-example:exe:wai-handler-hal-example-warp"
+
+    - path: "wai-handler-hal-example/src"
+      component: "lib:wai-handler-hal-example"

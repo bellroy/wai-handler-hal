@@ -1,7 +1,7 @@
 # Use `dockerTools.buildImage` to add our binary to an
 # Amazon-provided base container.
 { sources ? import ../../nix/sources.nix { }
-, compiler-nix-name ? "ghc922"
+, compiler-nix-name ? "ghc924"
 }:
 let
   haskellNix = import sources."haskell.nix" { };
