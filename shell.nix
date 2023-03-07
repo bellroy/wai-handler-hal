@@ -1,5 +1,5 @@
 { sources ? import ./nix/sources.nix { }
-, compiler-nix-name ? "ghc924"
+, compiler-nix-name ? "ghc926"
 , withHoogle ? false
 }:
 let
