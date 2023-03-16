@@ -58,7 +58,7 @@ import Data.Function ((&))
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as H
 import qualified Data.IORef as IORef
-import Data.List (foldl')
+import Data.List (foldl', sort)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
@@ -172,7 +172,7 @@ toWaiRequest ::
   IO Wai.Request
 toWaiRequest vault port req = do
   let pathSegments = T.splitOn "/" . T.dropWhile (== '/') $ HalRequest.path req
-      query = constructQuery $ HalRequest.multiValueQueryStringParameters req
+      query = sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
       hints =
         NS.defaultHints
           { NS.addrFlags = [NS.AI_NUMERICHOST],
@@ -214,10 +214,11 @@ toWaiRequest vault port req = do
               [] -> ""
               _ -> renderQuery True query,
             Wai.requestHeaders =
-              foldMap
-                ( \(hName, hValues) ->
-                    (CI.map T.encodeUtf8 hName,) . T.encodeUtf8 <$> hValues
-                )
+              sort
+                . foldMap
+                  ( \(hName, hValues) ->
+                      (CI.map T.encodeUtf8 hName,) . T.encodeUtf8 <$> hValues
+                  )
                 . H.toList
                 $ HalRequest.multiValueHeaders req,
             Wai.isSecure = True,
