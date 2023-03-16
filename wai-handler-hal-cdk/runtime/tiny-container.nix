@@ -4,7 +4,7 @@
 # stdout. After building, you'll want to do something like `./result |
 # docker load`, and then tag and push.
 { sources ? import ../../nix/sources.nix { }
-, compiler-nix-name ? "ghc926"
+, compiler-nix-name ? "ghc924"
 }:
 let
   haskellNix = import sources."haskell.nix" { };

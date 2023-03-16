@@ -1,7 +1,7 @@
 # Use `dockerTools.buildImage` to add our binary to an
 # Amazon-provided base container.
 { sources ? import ../../nix/sources.nix { }
-, compiler-nix-name ? "ghc926"
+, compiler-nix-name ? "ghc924"
 }:
 let
   haskellNix = import sources."haskell.nix" { };
@@ -23,7 +23,7 @@ pkgs.dockerTools.buildImage {
     let bootstrap = import ./. { inherit sources compiler-nix-name; };
     in
     # Copy our bootstrap to `/var/runtime/bootstrap`, so it's where
-    # `/lambda-entrypoint.sh` expects to find it.
+      # `/lambda-entrypoint.sh` expects to find it.
     pkgs.runCommandLocal "container-contents" { } ''
       mkdir -p $out/var/runtime
       cp ${bootstrap}/bootstrap $out/var/runtime/bootstrap
@@ -32,12 +32,12 @@ pkgs.dockerTools.buildImage {
   config = {
     # Lambda containers treat CMD as the name of the handler,
     # but we don't use it.
-    Cmd = ["UNUSED"];
+    Cmd = [ "UNUSED" ];
 
     # This script is provided by the base image and falls back
     # to the runtime interface emulator if not running on AWS.
     # It expects the binary to be at `/var/runtime/bootstrap`.
-    EntryPoint = ["/lambda-entrypoint.sh"];
+    EntryPoint = [ "/lambda-entrypoint.sh" ];
 
     # This is the working dir set by the base image. AWS won't
     # boot the Lambda unless it is provided.
