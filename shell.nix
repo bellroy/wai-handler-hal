@@ -16,6 +16,7 @@ project.shellFor {
   };
 
   buildInputs = with pkgs; [
+    cabal-install
     niv
     nixpkgs-fmt
     nodejs
