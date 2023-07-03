@@ -17,3 +17,5 @@ of AWS API Gateway **REST APIs** (`AWS::ApiGateway::RestApi` in
 CloudFormation). If you try to use such a Lambda with an API Gateway
 **HTTP API** (`AWS::ApiGatewayV2::Api` in CloudFormation), it will
 return 500s.
+
+An example repository can be found [here](https://github.com/bellroy/wai-handler-hal-example)
