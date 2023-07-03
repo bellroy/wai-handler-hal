@@ -13,7 +13,7 @@
       cabalPackages = [
         {
           name = "wai-handler-hal";
-          path = ./package.nix;
+          path = ./wai-handler-hal.nix;
         }
       ];
       supportedCompilers = [ "ghc8107" "ghc92" "ghc94" ];
