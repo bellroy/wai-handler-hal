@@ -168,7 +168,7 @@ The formatters used in this repo are provided by `shell.nix`:
 
 ## Regenerate CI
 
-This repo uses `haskell-ci`, which is provided by `shell.nix`:
+This repo uses `haskell-ci`, which is provided by `flake.nix`:
 
 ```shell
 haskell-ci regenerate

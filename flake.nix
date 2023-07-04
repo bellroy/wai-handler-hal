@@ -44,6 +44,7 @@
           haskellPackages.cabal-fmt
           haskellPackages.hlint
           cabal2nix
+          haskell-ci
         ];
 
         makeShell = haskellPackages: (makePackageSet haskellPackages).shellFor {
