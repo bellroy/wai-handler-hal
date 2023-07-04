@@ -132,7 +132,7 @@ The simplest possible integration sends every request to the Lambda
 (where the `wai` `Application` can return 404 or whatever if the
 endpoint doesn't match). This is done by mapping the paths `/` and
 `/{proxy+}` for the HTTP method `ANY`. We do this in our [CDK example](https://github.com/bellroy/wai-handler-hal-example/tree/master/wai-handler-hal-cdk),
-and CDK provides a Construct which encapsulates this pattern, making
+and [CDK provides a Construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.LambdaRestApi.html) which encapsulates this pattern, making
 it extremely simple to deploy.
 
 ### Splitting Servant applications
