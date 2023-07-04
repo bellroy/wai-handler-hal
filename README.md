@@ -58,8 +58,9 @@ testing.
 ### Caveats
 
 * The Lambda is never told the port that the API Gateway is listening
-  on. Most APIs will listen on `443` (HTTPS), so that's what's in the
-  above example.
+  on. Most APIs will listen on `443` (HTTPS), so that's what the
+  library reports by default. See `runWithContext` if you need to
+  change this.
 
 * The Lambda is never told the HTTP version that the client uses when
   talking with the API Gateway. We assume HTTP 1.1.
