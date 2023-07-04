@@ -18,14 +18,12 @@ CloudFormation). If you try to use such a Lambda with an API Gateway
 **HTTP API** (`AWS::ApiGatewayV2::Api` in CloudFormation), it will
 return 500s.
 
-## Overview of the repo
 
-There are three main subdirectories of interest:
+For code examples, see [this repository](https://github.com/bellroy/wai-handler-hal-example),
+which contains:
 
-* `wai-handler-hal`: the library that glues `wai` and `hal` together;
-* `wai-handler-hal-example`: A simple `servant` API set up to run on
-  both `hal` and `warp`; and
-* `wai-handler-hal-cdk`: A small [AWS
+* [`wai-handler-hal-example`](https://github.com/bellroy/wai-handler-hal-example): A simple `servant` API set up to run on both `hal` and `warp`; and
+* [`wai-handler-hal-cdk`](https://github.com/bellroy/wai-handler-hal-example/tree/master/wai-handler-hal-cdk): A small [AWS
   CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html)
   application that deploys an API backed by `wai-handler-hal-example`.
 
@@ -60,8 +58,9 @@ testing.
 ### Caveats
 
 * The Lambda is never told the port that the API Gateway is listening
-  on. Most APIs will listen on `443` (HTTPS), so that's what's in this
-  example.
+  on. Most APIs will listen on `443` (HTTPS), so that's what the
+  library reports by default. See `runWithContext` if you need to
+  change this.
 
 * The Lambda is never told the HTTP version that the client uses when
   talking with the API Gateway. We assume HTTP 1.1.
@@ -69,7 +68,7 @@ testing.
 ## Packaging
 
 Lambda functions are packaged in one of two ways: as `.zip` files or
-as Docker container images. The `wai-handler-hal-cdk` example uses
+as Docker container images. The [`wai-handler-hal-cdk` example](https://github.com/bellroy/wai-handler-hal-example/tree/master/wai-handler-hal-cdk) uses
 `.zip` files for simplicity. CDK doesn't give us an easy way to build
 container images using `nix build`, so a container-based deployment
 using CDK would need to push to ECR first and then reference the image
@@ -118,15 +117,9 @@ Integration, it's handy.)
 At the time of writing (2021-04-06), the
 `amazon/aws-lambda-provided:al2` (Amazon Linux 2 tag) is the newest
 base image that Amazon recommends for custom runtimes. You can use a
-`Dockerfile` to build your images, but there are commented `.nix`
-files in `wai-handler-hal-cdk/runtime` that show different ways of
-building containers using `nixpkgs`'
-[`dockerTools.buildImage`](https://nixos.org/manual/nixpkgs/stable/#ssec-pkgs-dockerTools-buildImage):
-
-* `container.nix` builds a container by copying the static bootstrap
-  executable into the `amazon/aws-lambda-provided:al2` image; and
-* `tiny-container.nix` constructs a minimal container from scratch,
-  fetching the emulator from Amazon's GitHub.
+`Dockerfile` to build your images; there are also commented .nix files
+in the [example repository](https://github.com/bellroy/wai-handler-hal-example),
+showing a couple of different approaches to building container images using Nix.
 
 ## Integrating
 
@@ -138,8 +131,8 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-res
 The simplest possible integration sends every request to the Lambda
 (where the `wai` `Application` can return 404 or whatever if the
 endpoint doesn't match). This is done by mapping the paths `/` and
-`/{proxy+}` for the HTTP method `ANY`. We do this in our CDK example,
-and CDK provides a Construct which encapsulates this pattern, making
+`/{proxy+}` for the HTTP method `ANY`. We do this in our [CDK example](https://github.com/bellroy/wai-handler-hal-example/tree/master/wai-handler-hal-cdk),
+and [CDK provides a Construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.LambdaRestApi.html) which encapsulates this pattern, making
 it extremely simple to deploy.
 
 ### Splitting Servant applications
@@ -176,7 +169,7 @@ The formatters used in this repo are provided by `shell.nix`:
 
 ## Regenerate CI
 
-This repo uses `haskell-ci`, which is provided by `shell.nix`:
+This repo uses `haskell-ci`, which is provided by `flake.nix`:
 
 ```shell
 haskell-ci regenerate
