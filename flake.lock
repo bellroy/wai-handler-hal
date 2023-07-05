@@ -7,11 +7,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1688525511,
-        "narHash": "sha256-kfQFC2iIlN3RU4UXsVP/R52hd79XFAkJYzdEELqRWog=",
+        "lastModified": 1688591243,
+        "narHash": "sha256-r6dzOb53ztGhb4n64OGH+w78dQ3kLEWS47aSusV+QY4=",
         "owner": "bellroy",
         "repo": "bellroy-nix-foss",
-        "rev": "5aa5f0f9d461bd75af3a2520319a5e56e17c9399",
+        "rev": "4b1a590f0e6519595c0ca9d83fdcc42f3677dd2e",
         "type": "github"
       },
       "original": {
