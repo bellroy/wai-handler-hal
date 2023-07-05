@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "bellroy-nix-foss": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1688591243,
+        "narHash": "sha256-r6dzOb53ztGhb4n64OGH+w78dQ3kLEWS47aSusV+QY4=",
+        "owner": "bellroy",
+        "repo": "bellroy-nix-foss",
+        "rev": "4b1a590f0e6519595c0ca9d83fdcc42f3677dd2e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bellroy",
+        "repo": "bellroy-nix-foss",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -36,24 +56,22 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1687934392,
-        "narHash": "sha256-Ilhgfbdufl9o0EZDyaRdeTAxxZPUAH/KvOcsj+g4ySA=",
-        "owner": "nixos",
+        "lastModified": 1688492144,
+        "narHash": "sha256-xjijhELugHZF8QGoJ20VU0buC7yC/8R5z9W0MeKRrJ4=",
+        "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "934a291b5a06b93cdaa8af72dcd013d96891aa79",
+        "rev": "ec322bf9e598a510995e7540f17af57ee0c8d5b9",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "type": "github"
+        "id": "nixpkgs",
+        "ref": "nixpkgs-unstable",
+        "type": "indirect"
       }
     },
     "root": {
       "inputs": {
-        "flake-compat": "flake-compat",
-        "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "bellroy-nix-foss": "bellroy-nix-foss"
       }
     },
     "systems": {
