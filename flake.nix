@@ -1,6 +1,6 @@
 {
   inputs = {
-    bellroy-nix-foss.url = "github:bellroy/bellroy-nix-foss";
+    bellroy-nix-foss.url = "github:bellroy/bellroy-nix-foss/fix-shells";
   };
 
   outputs = inputs:
