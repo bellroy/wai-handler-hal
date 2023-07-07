@@ -13,11 +13,11 @@
       ];
       supportedCompilers = [ "ghc8107" "ghc92" "ghc94" ];
       defaultCompiler = "ghc92";
-      haskellPackagesOverride = { compilerName, haskelLib, final, prev }:
+      haskellPackagesOverride = { compilerName, haskellLib, final, prev }:
         if compilerName == "ghc94"
         then {
           # hal doesn't support newer hedgehog
-          hedgehog = haskelLib.compose.dontCheck (prev.callHackage "hedgehog" "1.1.2" { });
+          hedgehog = haskellLib.compose.dontCheck (prev.callHackage "hedgehog" "1.1.2" { });
         }
         else { };
     };
