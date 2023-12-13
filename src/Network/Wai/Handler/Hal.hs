@@ -296,7 +296,7 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
 
 createProxyBody :: Text -> ByteString -> HalResponse.ProxyBody
 createProxyBody contentType body
-  | any (`T.isPrefixOf` contentType) ["text/plain", "application/json"] =
+  | any (`T.isPrefixOf` contentType) ["text/html", "text/plain", "application/json"] =
     HalResponse.ProxyBody contentType (T.decodeUtf8 body) False
   | otherwise =
     HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
