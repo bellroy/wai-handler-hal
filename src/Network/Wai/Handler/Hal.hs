@@ -156,7 +156,7 @@ defaultOptions = Options
 -- function exposes all the configurable knobs.
 runWithContext ::
   MonadIO m =>
-  -- | Configuration options, 'defaultOptions' provides sensible defaults.
+  -- | Configuration options. 'defaultOptions' provides sensible defaults.
   Options ->
   -- | We pass two 'Vault' keys to the callback that provides the
   -- 'Wai.Application'. This allows the application to look into the
