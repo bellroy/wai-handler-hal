@@ -119,11 +119,11 @@ data Options = Options
   { -- | Vault of values to share between the application and any
     -- middleware. You can pass in @Data.Vault.Lazy.'Vault.empty'@, or
     -- 'mempty' if you don't want to depend on @vault@ directly.
-    optionsVault :: Vault
+    vault :: Vault
   , -- | API Gateway doesn't tell us the port it's listening on, so you
     -- have to tell it yourself. This is almost always going to be 443
     -- (HTTPS).
-    optionsPortNumber :: PortNumber
+    portNumber :: PortNumber
   , -- | Binary responses need to be encoded as base64. This option lets you
     -- customize which mime types are considered binary data.
     --
@@ -134,15 +134,15 @@ data Options = Options
     -- * anything starting with @text/@
     -- * anything ending with @+json@
     -- * anything ending with @+xml@
-    optionsBinaryMimeType :: Text -> Bool
+    binaryMimeType :: Text -> Bool
   }
 
 -- | Default options for running 'Wai.Application's on Lambda.
 defaultOptions :: Options
 defaultOptions = Options
-  { optionsVault          = Vault.empty
-  , optionsPortNumber     = 443
-  , optionsBinaryMimeType = \mime -> case mime of
+  { vault          = Vault.empty
+  , portNumber     = 443
+  , binaryMimeType = \mime -> case mime of
       "application/json"              -> False
       "application/xml"               -> False
       _ | "text/" `T.isPrefixOf` mime -> False
@@ -183,11 +183,11 @@ runWithContext ::
 runWithContext opts app ctx req = liftIO $ do
   contextKey <- Vault.newKey
   requestKey <- Vault.newKey
-  let vault' =
-        (optionsVault opts)
-          & Vault.insert contextKey ctx
-          & Vault.insert requestKey req
-      opts' = opts {optionsVault = vault'}
+  let opts' = opts
+        { vault = (vault opts)
+              & Vault.insert contextKey ctx
+              & Vault.insert requestKey req
+        }
   waiReq <- toWaiRequest opts' req
   responseRef <- IORef.newIORef Nothing
   Wai.ResponseReceived <- app contextKey requestKey waiReq $ \waiResp ->
@@ -205,7 +205,7 @@ toWaiRequest ::
   HalRequest.ProxyRequest a ->
   IO Wai.Request
 toWaiRequest opts req = do
-  let port = optionsPortNumber opts
+  let port = portNumber opts
       pathSegments = T.splitOn "/" . T.dropWhile (== '/') $ HalRequest.path req
       query = sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
       hints =
@@ -261,7 +261,7 @@ toWaiRequest opts req = do
             Wai.pathInfo = pathSegments,
             Wai.queryString = query,
             Wai.requestBody = body,
-            Wai.vault = optionsVault opts,
+            Wai.vault = vault opts,
             Wai.requestBodyLength =
               Wai.KnownLength . fromIntegral . BL.length $ HalRequest.body req,
             Wai.requestHeaderHost = getHeader hHost req,
@@ -331,7 +331,7 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
 
 createProxyBody :: Options -> Text -> ByteString -> HalResponse.ProxyBody
 createProxyBody opts contentType body
-  | optionsBinaryMimeType opts contentType =
+  | binaryMimeType opts contentType =
     HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
   | otherwise =
     HalResponse.ProxyBody contentType (T.decodeUtf8 body) False

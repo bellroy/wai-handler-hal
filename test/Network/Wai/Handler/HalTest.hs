@@ -38,5 +38,5 @@ test_DefaultBinaryMimeTypes = testCase "default binary MIME types" $ do
   where
     assertBinary mime expected = assertEqual
       mime
-      (optionsBinaryMimeType defaultOptions (T.pack mime))
+      (binaryMimeType defaultOptions (T.pack mime))
       expected
