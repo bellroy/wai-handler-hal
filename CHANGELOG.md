@@ -1,5 +1,13 @@
 # Revision history for wai-handler-hal
 
+## 0.3.0.0 -- UNRELEASED
+
+- Breaking change: add `Options` record parameter to `runWithOptions`,
+  `toWaiRequest` and `fromWaiResponse`.
+- Provide a `defaultOptions`.
+- Make whether or not to run base64-encoding on the response body customizable
+  through `Options.binaryMimeType`.
+
 ## 0.2.0.0 -- 2023-03-17
 
 - Breaking change: `toWaiRequest` now sorts request headers and query string
