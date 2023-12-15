@@ -101,7 +101,7 @@ import System.IO
 -- form, and probably all that you'll need. See 'runWithContext' if
 -- you have more complex needs.
 run ::
-  MonadIO m =>
+  (MonadIO m) =>
   Wai.Application ->
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
@@ -119,12 +119,12 @@ data Options = Options
   { -- | Vault of values to share between the application and any
     -- middleware. You can pass in @Data.Vault.Lazy.'Vault.empty'@, or
     -- 'mempty' if you don't want to depend on @vault@ directly.
-    vault :: Vault
-  , -- | API Gateway doesn't tell us the port it's listening on, so you
+    vault :: Vault,
+    -- | API Gateway doesn't tell us the port it's listening on, so you
     -- have to tell it yourself. This is almost always going to be 443
     -- (HTTPS).
-    portNumber :: PortNumber
-  , -- | Binary responses need to be encoded as base64. This option lets you
+    portNumber :: PortNumber,
+    -- | Binary responses need to be encoded as base64. This option lets you
     -- customize which mime types are considered binary data.
     --
     -- The following mime types are __not__ considered binary by default:
@@ -139,23 +139,24 @@ data Options = Options
 
 -- | Default options for running 'Wai.Application's on Lambda.
 defaultOptions :: Options
-defaultOptions = Options
-  { vault          = Vault.empty
-  , portNumber     = 443
-  , binaryMimeType = \mime -> case mime of
-      "application/json"              -> False
-      "application/xml"               -> False
-      _ | "text/" `T.isPrefixOf` mime -> False
-      _ | "+json" `T.isSuffixOf` mime -> False
-      _ | "+xml"  `T.isSuffixOf` mime -> False
-      _                               -> True
-  }
+defaultOptions =
+  Options
+    { vault = Vault.empty,
+      portNumber = 443,
+      binaryMimeType = \mime -> case mime of
+        "application/json" -> False
+        "application/xml" -> False
+        _ | "text/" `T.isPrefixOf` mime -> False
+        _ | "+json" `T.isSuffixOf` mime -> False
+        _ | "+xml" `T.isSuffixOf` mime -> False
+        _ -> True
+    }
 
 -- | Convert a WAI 'Wai.Application' into a function that can
 -- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
 -- function exposes all the configurable knobs.
 runWithContext ::
-  MonadIO m =>
+  (MonadIO m) =>
   -- | Configuration options. 'defaultOptions' provides sensible defaults.
   Options ->
   -- | We pass two 'Vault' keys to the callback that provides the
@@ -183,11 +184,11 @@ runWithContext ::
 runWithContext opts app ctx req = liftIO $ do
   contextKey <- Vault.newKey
   requestKey <- Vault.newKey
-  let opts' = opts
-        { vault = (vault opts)
-              & Vault.insert contextKey ctx
-              & Vault.insert requestKey req
-        }
+  let vault' =
+        vault opts
+          & Vault.insert contextKey ctx
+          & Vault.insert requestKey req
+      opts' = opts {vault = vault'}
   waiReq <- toWaiRequest opts' req
   responseRef <- IORef.newIORef Nothing
   Wai.ResponseReceived <- app contextKey requestKey waiReq $ \waiResp ->
@@ -332,9 +333,9 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
 createProxyBody :: Options -> Text -> ByteString -> HalResponse.ProxyBody
 createProxyBody opts contentType body
   | binaryMimeType opts contentType =
-    HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
+      HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
   | otherwise =
-    HalResponse.ProxyBody contentType (T.decodeUtf8 body) False
+      HalResponse.ProxyBody contentType (T.decodeUtf8 body) False
 
 addHeaders ::
   ResponseHeaders -> HalResponse.ProxyResponse -> HalResponse.ProxyResponse

@@ -24,19 +24,20 @@ test_ConvertProxyRequest =
 
 test_DefaultBinaryMimeTypes :: TestTree
 test_DefaultBinaryMimeTypes = testCase "default binary MIME types" $ do
-  assertBinary "text/plain"               False
-  assertBinary "text/html"                False
-  assertBinary "application/json"         False
-  assertBinary "application/xml"          False
-  assertBinary "application/vnd.api+json" False
-  assertBinary "application/vnd.api+xml"  False
-  assertBinary "image/svg+xml"            False
+  assertBinary False "text/plain"
+  assertBinary False "text/html"
+  assertBinary False "application/json"
+  assertBinary False "application/xml"
+  assertBinary False "application/vnd.api+json"
+  assertBinary False "application/vnd.api+xml"
+  assertBinary False "image/svg+xml"
 
-  assertBinary "application/octet-stream" True
-  assertBinary "audio/vorbis"             True
-  assertBinary "image/png"                True
+  assertBinary True "application/octet-stream"
+  assertBinary True "audio/vorbis"
+  assertBinary True "image/png"
   where
-    assertBinary mime expected = assertEqual
-      mime
-      (binaryMimeType defaultOptions (T.pack mime))
-      expected
+    assertBinary expected mime =
+      assertEqual
+        mime
+        (binaryMimeType defaultOptions (T.pack mime))
+        expected
