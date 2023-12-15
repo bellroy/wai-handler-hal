@@ -31,9 +31,9 @@
 -- @
 module Network.Wai.Handler.Hal
   ( run,
+    runWithContext,
     Options (..),
     defaultOptions,
-    runWithContext,
     toWaiRequest,
     fromWaiResponse,
   )
