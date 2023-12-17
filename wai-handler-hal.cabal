@@ -1,6 +1,6 @@
 cabal-version:      2.2
 name:               wai-handler-hal
-version:            0.2.0.0
+version:            0.3.0.0
 synopsis:           Wrap WAI applications to run on AWS Lambda
 description:
   This library provides a function 'Network.Wai.Handler.Hal.run' to
@@ -54,7 +54,7 @@ common deps
     , hal                   >=0.4.7     && <0.4.11 || >=1.0.0 && <1.1
     , http-types            ^>=0.12.3
     , network               >=2.8.0.0   && <3.2
-    , text                  ^>=1.2.3    || >=2.0 && <2.1.1
+    , text                  ^>=1.2.3    || >=2.0   && <2.1.1
     , unordered-containers  ^>=0.2.10.0
     , vault                 ^>=0.3.1.0
     , wai                   ^>=3.2.2
@@ -73,10 +73,11 @@ test-suite wai-handler-hal-tests
   other-modules:      Network.Wai.Handler.HalTest
   build-tool-depends: tasty-discover:tasty-discover ^>=4.2.2
   build-depends:
-    , aeson            >=1.5.6.0  && <1.6 || >=2.0 && <2.3
+    , aeson            >=1.5.6.0  && <1.6  || >=2.0 && <2.3
     , pretty-simple    ^>=4.1.0.0
     , tasty            >=1.3      && <1.6
     , tasty-golden     ^>=2.3
+    , tasty-hunit      >=0.9      && <0.11
     , text
     , wai-handler-hal
 

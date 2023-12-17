@@ -32,6 +32,8 @@
 module Network.Wai.Handler.Hal
   ( run,
     runWithContext,
+    Options (..),
+    defaultOptions,
     toWaiRequest,
     fromWaiResponse,
   )
@@ -99,31 +101,64 @@ import System.IO
 -- form, and probably all that you'll need. See 'runWithContext' if
 -- you have more complex needs.
 run ::
-  MonadIO m =>
+  (MonadIO m) =>
   Wai.Application ->
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
 run app req = liftIO $ do
-  waiReq <- toWaiRequest Vault.empty 443 req
+  waiReq <- toWaiRequest defaultOptions req
   responseRef <- IORef.newIORef Nothing
   Wai.ResponseReceived <- app waiReq $ \waiResp ->
     Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
   Just waiResp <- IORef.readIORef responseRef
-  fromWaiResponse waiResp
+  fromWaiResponse defaultOptions waiResp
+
+-- | Options that can be used to customize the behaviour of 'runWithContext'.
+-- 'defaultOptions' provides sensible defaults.
+data Options = Options
+  { -- | Vault of values to share between the application and any
+    -- middleware. You can pass in @Data.Vault.Lazy.'Vault.empty'@, or
+    -- 'mempty' if you don't want to depend on @vault@ directly.
+    vault :: Vault,
+    -- | API Gateway doesn't tell us the port it's listening on, so you
+    -- have to tell it yourself. This is almost always going to be 443
+    -- (HTTPS).
+    portNumber :: PortNumber,
+    -- | Binary responses need to be encoded as base64. This option lets you
+    -- customize which mime types are considered binary data.
+    --
+    -- The following mime types are __not__ considered binary by default:
+    --
+    -- * @application/json@
+    -- * @application/xml@
+    -- * anything starting with @text/@
+    -- * anything ending with @+json@
+    -- * anything ending with @+xml@
+    binaryMimeType :: Text -> Bool
+  }
+
+-- | Default options for running 'Wai.Application's on Lambda.
+defaultOptions :: Options
+defaultOptions =
+  Options
+    { vault = Vault.empty,
+      portNumber = 443,
+      binaryMimeType = \mime -> case mime of
+        "application/json" -> False
+        "application/xml" -> False
+        _ | "text/" `T.isPrefixOf` mime -> False
+        _ | "+json" `T.isSuffixOf` mime -> False
+        _ | "+xml" `T.isSuffixOf` mime -> False
+        _ -> True
+    }
 
 -- | Convert a WAI 'Wai.Application' into a function that can
 -- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
 -- function exposes all the configurable knobs.
 runWithContext ::
-  MonadIO m =>
-  -- | Vault of values to share between the application and any
-  -- middleware. You can pass in @Data.Vault.Lazy.'Vault.empty'@, or
-  -- 'mempty' if you don't want to depend on @vault@ directly.
-  Vault ->
-  -- | API Gateway doesn't tell us the port it's listening on, so you
-  -- have to tell it yourself. This is almost always going to be 443
-  -- (HTTPS).
-  PortNumber ->
+  (MonadIO m) =>
+  -- | Configuration options. 'defaultOptions' provides sensible defaults.
+  Options ->
   -- | We pass two 'Vault' keys to the callback that provides the
   -- 'Wai.Application'. This allows the application to look into the
   -- 'Vault' part of each request and read @hal@ data structures, if
@@ -146,19 +181,20 @@ runWithContext ::
   -- an "ambiguous type variable" error at the use site.
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
-runWithContext vault port app ctx req = liftIO $ do
+runWithContext opts app ctx req = liftIO $ do
   contextKey <- Vault.newKey
   requestKey <- Vault.newKey
   let vault' =
-        vault
+        vault opts
           & Vault.insert contextKey ctx
           & Vault.insert requestKey req
-  waiReq <- toWaiRequest vault' port req
+      opts' = opts {vault = vault'}
+  waiReq <- toWaiRequest opts' req
   responseRef <- IORef.newIORef Nothing
   Wai.ResponseReceived <- app contextKey requestKey waiReq $ \waiResp ->
     Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
   Just waiResp <- IORef.readIORef responseRef
-  fromWaiResponse waiResp
+  fromWaiResponse opts' waiResp
 
 -- | Convert the request sent to a Lambda serving an API Gateway proxy
 -- integration into a WAI request.
@@ -166,12 +202,12 @@ runWithContext vault port app ctx req = liftIO $ do
 -- __Note:__ We aren't told the HTTP version the client is using, so
 -- we assume HTTP 1.1.
 toWaiRequest ::
-  Vault ->
-  PortNumber ->
+  Options ->
   HalRequest.ProxyRequest a ->
   IO Wai.Request
-toWaiRequest vault port req = do
-  let pathSegments = T.splitOn "/" . T.dropWhile (== '/') $ HalRequest.path req
+toWaiRequest opts req = do
+  let port = portNumber opts
+      pathSegments = T.splitOn "/" . T.dropWhile (== '/') $ HalRequest.path req
       query = sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
       hints =
         NS.defaultHints
@@ -226,7 +262,7 @@ toWaiRequest vault port req = do
             Wai.pathInfo = pathSegments,
             Wai.queryString = query,
             Wai.requestBody = body,
-            Wai.vault = vault,
+            Wai.vault = vault opts,
             Wai.requestBodyLength =
               Wai.KnownLength . fromIntegral . BL.length $ HalRequest.body req,
             Wai.requestHeaderHost = getHeader hHost req,
@@ -262,29 +298,29 @@ getHeader h =
 
 -- | Convert a WAI 'Wai.Response' into a hal
 -- 'HalResponse.ProxyResponse'.
-fromWaiResponse :: Wai.Response -> IO HalResponse.ProxyResponse
-fromWaiResponse (Wai.ResponseFile status headers path mFilePart) = do
+fromWaiResponse :: Options -> Wai.Response -> IO HalResponse.ProxyResponse
+fromWaiResponse opts (Wai.ResponseFile status headers path mFilePart) = do
   fileData <- readFilePart path mFilePart
   pure
     . addHeaders headers
     . HalResponse.response status
-    . createProxyBody (getContentType headers)
+    . createProxyBody opts (getContentType headers)
     $ fileData
-fromWaiResponse (Wai.ResponseBuilder status headers builder) =
+fromWaiResponse opts (Wai.ResponseBuilder status headers builder) =
   pure
     . addHeaders headers
     . HalResponse.response status
-    . createProxyBody (getContentType headers)
+    . createProxyBody opts (getContentType headers)
     . BL.toStrict
     $ Builder.toLazyByteString builder
-fromWaiResponse (Wai.ResponseStream status headers stream) = do
+fromWaiResponse opts (Wai.ResponseStream status headers stream) = do
   builderRef <- IORef.newIORef mempty
   let addChunk chunk = IORef.modifyIORef builderRef (<> chunk)
       flush = IORef.modifyIORef builderRef (<> Builder.flush)
   stream addChunk flush
   builder <- IORef.readIORef builderRef
-  fromWaiResponse (Wai.ResponseBuilder status headers builder)
-fromWaiResponse (Wai.ResponseRaw _ resp) = fromWaiResponse resp
+  fromWaiResponse opts (Wai.ResponseBuilder status headers builder)
+fromWaiResponse opts (Wai.ResponseRaw _ resp) = fromWaiResponse opts resp
 
 readFilePart :: FilePath -> Maybe Wai.FilePart -> IO ByteString
 readFilePart path mPart = withFile path ReadMode $ \h -> do
@@ -294,12 +330,12 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
       hSeek h AbsoluteSeek offset
       B.hGet h $ fromIntegral count
 
-createProxyBody :: Text -> ByteString -> HalResponse.ProxyBody
-createProxyBody contentType body
-  | any (`T.isPrefixOf` contentType) ["text/plain", "application/json"] =
-    HalResponse.ProxyBody contentType (T.decodeUtf8 body) False
+createProxyBody :: Options -> Text -> ByteString -> HalResponse.ProxyBody
+createProxyBody opts contentType body
+  | binaryMimeType opts contentType =
+      HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
   | otherwise =
-    HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
+      HalResponse.ProxyBody contentType (T.decodeUtf8 body) False
 
 addHeaders ::
   ResponseHeaders -> HalResponse.ProxyResponse -> HalResponse.ProxyResponse
