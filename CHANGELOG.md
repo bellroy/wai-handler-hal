@@ -1,6 +1,6 @@
 # Revision history for wai-handler-hal
 
-## 0.3.0.0 -- 2023-12-16
+## 0.3.0.0 -- 2023-12-17
 
 - Breaking change: add `Options` record parameter to `runWithOptions`,
   `toWaiRequest` and `fromWaiResponse`.
