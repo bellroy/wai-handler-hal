@@ -1,4 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TupleSections #-}
@@ -62,11 +63,13 @@ import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as H
 import qualified Data.IORef as IORef
 import Data.List (foldl', sort)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Data.Vault.Lazy (Key, Vault)
 import qualified Data.Vault.Lazy as Vault
+import Network.HTTP.Media (MediaType, matches, parseAccept, renderHeader)
 import Network.HTTP.Types.Header
   ( HeaderName,
     ResponseHeaders,
@@ -119,17 +122,20 @@ data Options = Options
     -- have to tell it yourself. This is almost always going to be 443
     -- (HTTPS).
     portNumber :: PortNumber,
-    -- | Binary responses need to be encoded as base64. This option lets you
-    -- customize which mime types are considered binary data.
+    -- | To return binary data, API Gateway requires you to configure
+    -- the @binaryMediaTypes@ setting on your API, and then
+    -- base64-encode your binary responses.
     --
-    -- The following mime types are __not__ considered binary by default:
+    -- If the @Content-Type@ header in the @wai@ 'Wai.Response'
+    -- matches any of the media types in this field, @wai-handler-hal@
+    -- will base64-encode its response to the API Gateway.
     --
-    -- * @application/json@
-    -- * @application/xml@
-    -- * anything starting with @text/@
-    -- * anything ending with @+json@
-    -- * anything ending with @+xml@
-    binaryMimeType :: Text -> Bool
+    -- If you set @binaryMediaTypes@ in your API, you should override
+    -- the default (empty) list to match.
+    --
+    -- /See:/ [Content type conversion in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-payload-encodings-workflow.html)
+    -- in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/).
+    binaryMediaTypes :: [MediaType]
   }
 
 -- | Default options for running 'Wai.Application's on Lambda.
@@ -138,13 +144,7 @@ defaultOptions =
   Options
     { vault = Vault.empty,
       portNumber = 443,
-      binaryMimeType = \mime -> case mime of
-        "application/json" -> False
-        "application/xml" -> False
-        _ | "text/" `T.isPrefixOf` mime -> False
-        _ | "+json" `T.isSuffixOf` mime -> False
-        _ | "+xml" `T.isSuffixOf` mime -> False
-        _ -> True
+      binaryMediaTypes = []
     }
 
 -- | A variant of 'run' with configurable 'Options'. Useful if you
@@ -345,12 +345,18 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
       hSeek h AbsoluteSeek offset
       B.hGet h $ fromIntegral count
 
-createProxyBody :: Options -> Text -> ByteString -> HalResponse.ProxyBody
-createProxyBody opts contentType body
-  | binaryMimeType opts contentType =
-      HalResponse.ProxyBody contentType (T.decodeUtf8 $ B64.encode body) True
-  | otherwise =
-      HalResponse.ProxyBody contentType (T.decodeUtf8 body) False
+createProxyBody :: Options -> MediaType -> ByteString -> HalResponse.ProxyBody
+createProxyBody opts contentType body =
+  HalResponse.ProxyBody
+    { HalResponse.contentType = T.decodeUtf8 $ renderHeader contentType,
+      HalResponse.serialized =
+        if isBase64Encoded
+          then T.decodeUtf8 $ B64.encode body
+          else T.decodeUtf8 body,
+      HalResponse.isBase64Encoded
+    }
+  where
+    isBase64Encoded = any (contentType `matches`) $ binaryMediaTypes opts
 
 addHeaders ::
   ResponseHeaders -> HalResponse.ProxyResponse -> HalResponse.ProxyResponse
@@ -364,6 +370,7 @@ addHeaders headers response = foldl' addHeader response headers
 
 -- | Try to find the content-type of a response, given the response
 -- headers. If we can't, return @"application/octet-stream"@.
-getContentType :: ResponseHeaders -> Text
-getContentType =
-  maybe "application/octet-stream" T.decodeUtf8 . lookup hContentType
+getContentType :: ResponseHeaders -> MediaType
+getContentType headers =
+  fromMaybe "application/octet-stream" $
+    lookup hContentType headers >>= parseAccept

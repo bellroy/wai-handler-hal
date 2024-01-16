@@ -6,6 +6,19 @@
   Application -> ProxyRequest NoAuthorizer -> ProxyResponse`. This
   provides a convenient way to pass custom `Options` without all the
   bells and whistles of `runWithContext`.
+
+- Instead of guessing whether a given response `Content-Type` should
+  be sent as text or base64-encoded binary, `Options` now contains a
+  `binaryMediaTypes :: [MediaType]`, which lists the media types that
+  should be base64-encoded. This should match the `binaryMediaTypes`
+  setting you have configured on the API Gateway that integrates with
+  your Lambda Function.
+
+  _See:_ [Content type conversion in API
+    Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-payload-encodings-workflow.html)
+    in the [Amazon API Gateway Developer
+    Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/).
+
 ## 0.3.0.0 -- 2023-12-17
 
 - Accidental breaking change: more elaborate `Content-Type` headers
