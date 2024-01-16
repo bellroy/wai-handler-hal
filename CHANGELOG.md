@@ -2,6 +2,9 @@
 
 ## 0.3.0.0 -- 2023-12-17
 
+- Accidental breaking change: more elaborate `Content-Type` headers
+  like `Content-Type: application/json; charset=utf-8` are now encoded
+  as if they were binary payloads. This release has been deprecated.
 - Breaking change: add `Options` record parameter to `runWithContext`,
   `toWaiRequest` and `fromWaiResponse`.
 - Provide a `defaultOptions`.
