@@ -2,7 +2,7 @@
 
 ## 0.3.0.0 -- 2023-12-17
 
-- Breaking change: add `Options` record parameter to `runWithOptions`,
+- Breaking change: add `Options` record parameter to `runWithContext`,
   `toWaiRequest` and `fromWaiResponse`.
 - Provide a `defaultOptions`.
 - Make whether or not to run base64-encoding on the response body customizable
