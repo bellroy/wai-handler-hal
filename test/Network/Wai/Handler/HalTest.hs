@@ -19,7 +19,7 @@ import Network.Wai (Response, responseLBS)
 import Network.Wai.Handler.Hal
 import Test.Tasty (TestTree)
 import Test.Tasty.Golden (goldenVsString)
-import Test.Tasty.HUnit (assertEqual, testCase)
+import Test.Tasty.HUnit (Assertion, assertEqual)
 import Text.Pretty.Simple (pShowNoColor)
 
 test_ConvertProxyRequest :: TestTree
@@ -31,8 +31,8 @@ test_ConvertProxyRequest =
     waiRequest <- toWaiRequest defaultOptions proxyRequest
     pure . TL.encodeUtf8 $ pShowNoColor waiRequest
 
-test_BinaryResponse :: TestTree
-test_BinaryResponse = testCase "Responding to API Gateway with text" $ do
+unit_BinaryResponse :: Assertion
+unit_BinaryResponse = do
   let options = defaultOptions {binaryMediaTypes = ["*/*"]}
   ProxyResponse {body = ProxyBody {..}} <-
     fromWaiResponse options helloWorld
@@ -43,8 +43,8 @@ test_BinaryResponse = testCase "Responding to API Gateway with text" $ do
     (Right "Hello, World!")
     (B64.decode (T.encodeUtf8 serialized))
 
-test_TextResponse :: TestTree
-test_TextResponse = testCase "Responding to API Gateway with text" $ do
+unit_TextResponse :: Assertion
+unit_TextResponse = do
   ProxyResponse {body = ProxyBody {..}} <-
     fromWaiResponse defaultOptions helloWorld
 
