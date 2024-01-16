@@ -1,5 +1,11 @@
 # Revision history for wai-handler-hal
 
+## 0.4.0.0 -- 2024-01-??
+
+- New function: `Wai.Handler.Hal.runWithOptions :: Options ->
+  Application -> ProxyRequest NoAuthorizer -> ProxyResponse`. This
+  provides a convenient way to pass custom `Options` without all the
+  bells and whistles of `runWithContext`.
 ## 0.3.0.0 -- 2023-12-17
 
 - Accidental breaking change: more elaborate `Content-Type` headers

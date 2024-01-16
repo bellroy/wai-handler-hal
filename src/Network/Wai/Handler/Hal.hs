@@ -31,6 +31,7 @@
 -- @
 module Network.Wai.Handler.Hal
   ( run,
+    runWithOptions,
     runWithContext,
     Options (..),
     defaultOptions,
@@ -105,13 +106,7 @@ run ::
   Wai.Application ->
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
-run app req = liftIO $ do
-  waiReq <- toWaiRequest defaultOptions req
-  responseRef <- IORef.newIORef Nothing
-  Wai.ResponseReceived <- app waiReq $ \waiResp ->
-    Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
-  Just waiResp <- IORef.readIORef responseRef
-  fromWaiResponse defaultOptions waiResp
+run = runWithOptions defaultOptions
 
 -- | Options that can be used to customize the behaviour of 'runWithContext'.
 -- 'defaultOptions' provides sensible defaults.
@@ -151,6 +146,26 @@ defaultOptions =
         _ | "+xml" `T.isSuffixOf` mime -> False
         _ -> True
     }
+
+-- | A variant of 'run' with configurable 'Options'. Useful if you
+-- just want to override the 'binaryMediaTypes' setting but don't need
+-- the rest of 'runWithContext''s features.
+--
+-- @since 0.4.0.0
+runWithOptions ::
+  (MonadIO m) =>
+  -- | Configuration options. 'defaultOptions' provides sensible defaults.
+  Options ->
+  Wai.Application ->
+  HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
+  m HalResponse.ProxyResponse
+runWithOptions opts app req = liftIO $ do
+    waiReq <- toWaiRequest opts req
+    responseRef <- IORef.newIORef Nothing
+    Wai.ResponseReceived <- app waiReq $ \waiResp ->
+      Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
+    Just waiResp <- IORef.readIORef responseRef
+    fromWaiResponse opts waiResp
 
 -- | Convert a WAI 'Wai.Application' into a function that can
 -- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
