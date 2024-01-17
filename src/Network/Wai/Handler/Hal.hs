@@ -16,7 +16,7 @@
 --
 -- Lifts an 'Wai.Application' so that it can be run using
 -- 'AWS.Lambda.Runtime.mRuntime' or
--- 'AWS.Lambda.Runtime.mRuntimeWithContext''. The glue code will look
+-- 'AWS.Lambda.Runtime.mRuntimeWithContext'. The glue code will look
 -- something like this:
 --
 -- @
@@ -168,7 +168,7 @@ runWithOptions opts app req = liftIO $ do
     fromWaiResponse opts waiResp
 
 -- | Convert a WAI 'Wai.Application' into a function that can
--- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext''. This
+-- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext'. This
 -- function exposes all the configurable knobs.
 runWithContext ::
   (MonadIO m) =>
