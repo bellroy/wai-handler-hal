@@ -1,17 +1,26 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Network.Wai.Handler.HalTest where
 
-import AWS.Lambda.Events.ApiGateway.ProxyRequest
+import AWS.Lambda.Events.ApiGateway.ProxyRequest (ProxyRequest)
+import AWS.Lambda.Events.ApiGateway.ProxyResponse
+  ( ProxyBody (..),
+    ProxyResponse (..),
+  )
 import Data.Aeson (eitherDecodeFileStrict')
-import qualified Data.Text as T
+import qualified Data.ByteString.Base64 as B64
+import qualified Data.Text.Encoding as T
 import qualified Data.Text.Lazy.Encoding as TL
 import Data.Void (Void)
+import Network.HTTP.Types (hContentType, ok200)
+import Network.Wai (Response, responseLBS)
 import Network.Wai.Handler.Hal
-import Test.Tasty
-import Test.Tasty.Golden
-import Test.Tasty.HUnit (assertEqual, testCase)
-import Text.Pretty.Simple
+import Test.Tasty (TestTree)
+import Test.Tasty.Golden (goldenVsString)
+import Test.Tasty.HUnit (Assertion, assertEqual)
+import Text.Pretty.Simple (pShowNoColor)
 
 test_ConvertProxyRequest :: TestTree
 test_ConvertProxyRequest =
@@ -22,22 +31,25 @@ test_ConvertProxyRequest =
     waiRequest <- toWaiRequest defaultOptions proxyRequest
     pure . TL.encodeUtf8 $ pShowNoColor waiRequest
 
-test_DefaultBinaryMimeTypes :: TestTree
-test_DefaultBinaryMimeTypes = testCase "default binary MIME types" $ do
-  assertBinary False "text/plain"
-  assertBinary False "text/html"
-  assertBinary False "application/json"
-  assertBinary False "application/xml"
-  assertBinary False "application/vnd.api+json"
-  assertBinary False "application/vnd.api+xml"
-  assertBinary False "image/svg+xml"
+unit_BinaryResponse :: Assertion
+unit_BinaryResponse = do
+  let options = defaultOptions {binaryMediaTypes = ["*/*"]}
+  ProxyResponse {body = ProxyBody {..}} <-
+    fromWaiResponse options helloWorld
 
-  assertBinary True "application/octet-stream"
-  assertBinary True "audio/vorbis"
-  assertBinary True "image/png"
-  where
-    assertBinary expected mime =
-      assertEqual
-        mime
-        (binaryMimeType defaultOptions (T.pack mime))
-        expected
+  assertEqual "response is binary" True isBase64Encoded
+  assertEqual
+    "response is base64-encoded"
+    (Right "Hello, World!")
+    (B64.decode (T.encodeUtf8 serialized))
+
+unit_TextResponse :: Assertion
+unit_TextResponse = do
+  ProxyResponse {body = ProxyBody {..}} <-
+    fromWaiResponse defaultOptions helloWorld
+
+  assertEqual "response is not binary" False isBase64Encoded
+  assertEqual "response is unmangled" "Hello, World!" serialized
+
+helloWorld :: Response
+helloWorld = responseLBS ok200 [(hContentType, "text/plain")] "Hello, World!"

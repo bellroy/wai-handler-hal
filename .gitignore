@@ -1,4 +1,6 @@
 .dir-locals.el
+.direnv/
+.envrc
 dist-newstyle/
 dist/
 node_modules/

@@ -1,6 +1,6 @@
 cabal-version:      2.2
 name:               wai-handler-hal
-version:            0.3.0.0
+version:            0.4.0.0
 synopsis:           Wrap WAI applications to run on AWS Lambda
 description:
   This library provides a function 'Network.Wai.Handler.Hal.run' to
@@ -21,8 +21,9 @@ maintainer:         Bellroy Tech Team <haskell@bellroy.com>
 copyright:          Copyright (C) 2021 Bellroy Pty Ltd
 category:           AWS, Cloud
 build-type:         Simple
-extra-source-files:
+extra-doc-files:
   CHANGELOG.md
+extra-source-files:
   README.md
   test/data/ProxyRequest.json
   test/golden/WaiRequest.txt
@@ -52,6 +53,7 @@ common deps
     , bytestring            >=0.10.8    && <0.12.1
     , case-insensitive      ^>=1.2.0.0
     , hal                   >=0.4.7     && <0.4.11 || >=1.0.0 && <1.2
+    , http-media            ^>=0.8.1.1
     , http-types            ^>=0.12.3
     , network               >=2.8.0.0   && <3.2
     , text                  ^>=1.2.3    || >=2.0   && <2.1.1
