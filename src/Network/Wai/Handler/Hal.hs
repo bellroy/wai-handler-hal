@@ -9,7 +9,7 @@
 -- |
 --
 -- Module      : Network.Wai.Handler.Hal
--- Copyright   : (C) 2021 Bellroy Pty Ltd
+-- Copyright   : (C) 2021, 2024 Bellroy Pty Ltd
 -- License     : BSD-3-Clause
 -- Maintainer  : Bellroy Tech Team <haskell@bellroy.com>
 -- Stability   : experimental
