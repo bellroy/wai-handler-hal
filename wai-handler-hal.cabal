@@ -18,7 +18,7 @@ license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Bellroy Tech Team <haskell@bellroy.com>
 maintainer:         Bellroy Tech Team <haskell@bellroy.com>
-copyright:          Copyright (C) 2021 Bellroy Pty Ltd
+copyright:          Copyright (C) 2021, 2024 Bellroy Pty Ltd
 category:           AWS, Cloud
 build-type:         Simple
 extra-doc-files:
