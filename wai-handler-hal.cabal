@@ -21,8 +21,9 @@ maintainer:         Bellroy Tech Team <haskell@bellroy.com>
 copyright:          Copyright (C) 2021 Bellroy Pty Ltd
 category:           AWS, Cloud
 build-type:         Simple
-extra-source-files:
+extra-doc-files:
   CHANGELOG.md
+extra-source-files:
   README.md
   test/data/ProxyRequest.json
   test/golden/WaiRequest.txt
