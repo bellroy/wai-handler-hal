@@ -1,6 +1,6 @@
 # Revision history for wai-handler-hal
 
-## 0.4.0.0 -- 2024-01-??
+## 0.4.0.0 -- 2024-01-17
 
 - New function: `Wai.Handler.Hal.runWithOptions :: Options ->
   Application -> ProxyRequest NoAuthorizer -> ProxyResponse`. This
