@@ -56,7 +56,7 @@ common deps
     , http-media            ^>=0.8.1.1
     , http-types            ^>=0.12.3
     , network               >=2.8.0.0   && <3.2
-    , text                  ^>=1.2.3    || >=2.0   && <2.1.2
+    , text                  ^>=1.2.3    || >=2.0   && <2.2
     , unordered-containers  ^>=0.2.10.0
     , vault                 ^>=0.3.1.0
     , wai                   ^>=3.2.2
