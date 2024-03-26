@@ -7,7 +7,7 @@ description:
   lift a @wai@ 'Network.Wai.Application' into a function that can be
   passed to @hal@'s 'AWS.Lambda.Runtime.mRuntime'. This allows you to
   run applications written in mature web frameworks (e.g., @servant@)
-  on AWS Lambda, as proxy integrations of API Gateway Rest APIs.
+  on AWS Lambda, as proxy integrations of API Gateway REST APIs.
   .
   More details, including deployment advice, are available in the
   repository's @README.md@.
