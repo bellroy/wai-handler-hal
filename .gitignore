@@ -1,6 +1,7 @@
 .dir-locals.el
 .direnv/
 .envrc
+.pre-commit-config.yaml
 dist-newstyle/
 dist/
 node_modules/
