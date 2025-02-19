@@ -1,6 +1,6 @@
 cabal-version:      2.2
 name:               wai-handler-hal
-version:            0.4.0.0
+version:            0.4.0.1
 synopsis:           Wrap WAI applications to run on AWS Lambda
 description:
   This library provides a function 'Network.Wai.Handler.Hal.run' to
