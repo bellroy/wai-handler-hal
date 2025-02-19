@@ -63,6 +63,7 @@ import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.IORef as IORef
 import Data.List (foldl', sort)
+import Data.List.NonEmpty (NonEmpty (..))
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as Text
@@ -244,7 +245,7 @@ toWaiRequest opts req = do
       (Just @IOException)
       (NS.getAddrInfo (Just hints) (Just sourceIp) (Just $ show port))
       >>= \case
-        Right (s : _) -> pure $ NS.addrAddress s
+        Right (s :| _) -> pure $ NS.addrAddress s
         _ -> do
           hPutStrLn stderr $
             mconcat

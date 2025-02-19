@@ -2,6 +2,7 @@
 
 ## 0.4.0.1 -- 2025-02-19
 
+- Use a `NonEmpty` list when consuming the result of `getAddrInfo`.
 - When resolving source IPs, do not require `AF_INET` (IPv4)
   addresses. This allows IPv6 source addresses to be passed through to
   the underlying `wai` `Application`.
