@@ -151,7 +151,7 @@ defaultOptions =
 
 -- | A variant of 'run' with configurable 'Options'. Useful if you
 -- just want to override the 'binaryMediaTypes' setting but don't need
--- the rest of 'runWithContext''s features.
+-- the rest of 'runWithContext'\'s features.
 --
 -- @since 0.4.0.0
 runWithOptions ::
