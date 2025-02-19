@@ -52,21 +52,21 @@ import qualified AWS.Lambda.Events.ApiGateway.ProxyResponse as HalResponse
 import Control.Exception (IOException, tryJust)
 import Control.Monad.IO.Class (MonadIO (..))
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Base64 as B64
+import qualified Data.ByteString as ByteString
+import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Builder as Builder
 import qualified Data.ByteString.Builder.Extra as Builder
-import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString.Lazy as LByteString
 import qualified Data.CaseInsensitive as CI
 import Data.Function ((&))
 import Data.HashMap.Lazy (HashMap)
-import qualified Data.HashMap.Lazy as H
+import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.IORef as IORef
 import Data.List (foldl', sort)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
+import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
 import Data.Vault.Lazy (Key, Vault)
 import qualified Data.Vault.Lazy as Vault
 import Network.HTTP.Media (MediaType, matches, parseAccept, renderHeader)
@@ -160,12 +160,12 @@ runWithOptions ::
   HalRequest.ProxyRequest HalRequest.NoAuthorizer ->
   m HalResponse.ProxyResponse
 runWithOptions opts app req = liftIO $ do
-    waiReq <- toWaiRequest opts req
-    responseRef <- IORef.newIORef Nothing
-    Wai.ResponseReceived <- app waiReq $ \waiResp ->
-      Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
-    Just waiResp <- IORef.readIORef responseRef
-    fromWaiResponse opts waiResp
+  waiReq <- toWaiRequest opts req
+  responseRef <- IORef.newIORef Nothing
+  Wai.ResponseReceived <- app waiReq $ \waiResp ->
+    Wai.ResponseReceived <$ IORef.writeIORef responseRef (Just waiResp)
+  Just waiResp <- IORef.readIORef responseRef
+  fromWaiResponse opts waiResp
 
 -- | Convert a WAI 'Wai.Application' into a function that can
 -- be run by hal's 'AWS.Lambda.Runtime.mRuntimeWithContext'. This
@@ -222,8 +222,10 @@ toWaiRequest ::
   IO Wai.Request
 toWaiRequest opts req = do
   let port = portNumber opts
-      pathSegments = T.splitOn "/" . T.dropWhile (== '/') $ HalRequest.path req
-      query = sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
+      pathSegments =
+        Text.splitOn "/" . Text.dropWhile (== '/') $ HalRequest.path req
+      query =
+        sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
       hints =
         NS.defaultHints
           { NS.addrFlags = [NS.AI_NUMERICHOST],
@@ -231,7 +233,7 @@ toWaiRequest opts req = do
             NS.addrSocketType = NS.Stream
           }
       sourceIp =
-        T.unpack
+        Text.unpack
           . HalRequest.sourceIp
           . HalRequest.identity
           $ HalRequest.requestContext req
@@ -253,53 +255,58 @@ toWaiRequest opts req = do
               ]
           pure . NS.SockAddrInet port $ NS.tupleToHostAddress (127, 0, 0, 1)
   body <- returnChunks $ HalRequest.body req
-  let waiReq =
-        Wai.Request
-          { Wai.requestMethod = T.encodeUtf8 $ HalRequest.httpMethod req,
-            Wai.httpVersion = HttpVersion 1 1,
-            Wai.rawPathInfo =
-              BL.toStrict
-                . Builder.toLazyByteString
-                $ encodePath pathSegments [],
-            Wai.rawQueryString = case query of
-              [] -> ""
-              _ -> renderQuery True query,
-            Wai.requestHeaders =
-              sort
-                . foldMap
-                  ( \(hName, hValues) ->
-                      (CI.map T.encodeUtf8 hName,) . T.encodeUtf8 <$> hValues
-                  )
-                . H.toList
-                $ HalRequest.multiValueHeaders req,
-            Wai.isSecure = True,
-            Wai.remoteHost = sourceHost,
-            Wai.pathInfo = pathSegments,
-            Wai.queryString = query,
-            Wai.requestBody = body,
-            Wai.vault = vault opts,
-            Wai.requestBodyLength =
-              Wai.KnownLength . fromIntegral . BL.length $ HalRequest.body req,
-            Wai.requestHeaderHost = getHeader hHost req,
-            Wai.requestHeaderRange = getHeader hRange req,
-            Wai.requestHeaderReferer = getHeader hReferer req,
-            Wai.requestHeaderUserAgent = getHeader hUserAgent req
-          }
-  pure waiReq
+  pure
+    Wai.Request
+      { Wai.requestMethod = Text.encodeUtf8 $ HalRequest.httpMethod req,
+        Wai.httpVersion = HttpVersion 1 1,
+        Wai.rawPathInfo =
+          LByteString.toStrict
+            . Builder.toLazyByteString
+            $ encodePath pathSegments [],
+        Wai.rawQueryString = case query of
+          [] -> ""
+          _ -> renderQuery True query,
+        Wai.requestHeaders =
+          sort
+            . foldMap
+              ( \(hName, hValues) ->
+                  (CI.map Text.encodeUtf8 hName,)
+                    . Text.encodeUtf8
+                    <$> hValues
+              )
+            . HashMap.toList
+            $ HalRequest.multiValueHeaders req,
+        Wai.isSecure = True,
+        Wai.remoteHost = sourceHost,
+        Wai.pathInfo = pathSegments,
+        Wai.queryString = query,
+        Wai.requestBody = body,
+        Wai.vault = vault opts,
+        Wai.requestBodyLength =
+          Wai.KnownLength
+            . fromIntegral
+            . LByteString.length
+            $ HalRequest.body req,
+        Wai.requestHeaderHost = getHeader hHost req,
+        Wai.requestHeaderRange = getHeader hRange req,
+        Wai.requestHeaderReferer = getHeader hReferer req,
+        Wai.requestHeaderUserAgent = getHeader hUserAgent req
+      }
 
--- | Unpack a lazy 'BL.ByteString' into its chunks, and return an IO
--- action which returns each chunk in sequence, and returns 'B.empty'
--- forever after the bytestring is exhausted.
-returnChunks :: BL.ByteString -> IO (IO B.ByteString)
+-- | Unpack a lazy 'LByteString.ByteString' into its chunks, and
+-- return an IO action which returns each chunk in sequence, and
+-- returns 'ByteString.empty' forever after the bytestring is
+-- exhausted.
+returnChunks :: LByteString.ByteString -> IO (IO ByteString.ByteString)
 returnChunks bs = do
-  chunkRef <- IORef.newIORef $ BL.toChunks bs
+  chunkRef <- IORef.newIORef $ LByteString.toChunks bs
   pure . IORef.atomicModifyIORef' chunkRef $
     \case
       [] -> mempty
       (ch : chs) -> (chs, ch)
 
 constructQuery :: HashMap Text [Text] -> Query
-constructQuery = foldMap expandParamList . H.toList
+constructQuery = foldMap expandParamList . HashMap.toList
   where
     expandParamList :: (Text, [Text]) -> [QueryItem]
     expandParamList (param, values) =
@@ -309,7 +316,9 @@ constructQuery = foldMap expandParamList . H.toList
 
 getHeader :: HeaderName -> HalRequest.ProxyRequest a -> Maybe ByteString
 getHeader h =
-  fmap T.encodeUtf8 . H.lookup (CI.map T.decodeUtf8 h) . HalRequest.headers
+  fmap Text.encodeUtf8
+    . HashMap.lookup (CI.map Text.decodeUtf8 h)
+    . HalRequest.headers
 
 -- | Convert a WAI 'Wai.Response' into a hal
 -- 'HalResponse.ProxyResponse'.
@@ -326,7 +335,7 @@ fromWaiResponse opts (Wai.ResponseBuilder status headers builder) =
     . addHeaders headers
     . HalResponse.response status
     . createProxyBody opts (getContentType headers)
-    . BL.toStrict
+    . LByteString.toStrict
     $ Builder.toLazyByteString builder
 fromWaiResponse opts (Wai.ResponseStream status headers stream) = do
   builderRef <- IORef.newIORef mempty
@@ -340,19 +349,19 @@ fromWaiResponse opts (Wai.ResponseRaw _ resp) = fromWaiResponse opts resp
 readFilePart :: FilePath -> Maybe Wai.FilePart -> IO ByteString
 readFilePart path mPart = withFile path ReadMode $ \h -> do
   case mPart of
-    Nothing -> B.hGetContents h
+    Nothing -> ByteString.hGetContents h
     Just (Wai.FilePart offset count _) -> do
       hSeek h AbsoluteSeek offset
-      B.hGet h $ fromIntegral count
+      ByteString.hGet h $ fromIntegral count
 
 createProxyBody :: Options -> MediaType -> ByteString -> HalResponse.ProxyBody
 createProxyBody opts contentType body =
   HalResponse.ProxyBody
-    { HalResponse.contentType = T.decodeUtf8 $ renderHeader contentType,
+    { HalResponse.contentType = Text.decodeUtf8 $ renderHeader contentType,
       HalResponse.serialized =
         if isBase64Encoded
-          then T.decodeUtf8 $ B64.encode body
-          else T.decodeUtf8 body,
+          then Text.decodeUtf8 $ Base64.encode body
+          else Text.decodeUtf8 body,
       HalResponse.isBase64Encoded
     }
   where
@@ -364,8 +373,8 @@ addHeaders headers response = foldl' addHeader response headers
   where
     addHeader r (hName, hValue) =
       HalResponse.addHeader
-        (T.decodeUtf8 $ CI.original hName)
-        (T.decodeUtf8 hValue)
+        (Text.decodeUtf8 $ CI.original hName)
+        (Text.decodeUtf8 hValue)
         r
 
 -- | Try to find the content-type of a response, given the response
