@@ -229,7 +229,6 @@ toWaiRequest opts req = do
       hints =
         NS.defaultHints
           { NS.addrFlags = [NS.AI_NUMERICHOST],
-            NS.addrFamily = NS.AF_INET,
             NS.addrSocketType = NS.Stream
           }
       sourceIp =
