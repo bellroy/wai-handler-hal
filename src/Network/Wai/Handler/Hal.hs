@@ -59,6 +59,7 @@ import qualified Data.ByteString.Builder.Extra as Builder
 import qualified Data.ByteString.Lazy as LByteString
 import qualified Data.CaseInsensitive as CI
 import Data.Function ((&))
+import Data.Functor ((<&>))
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.IORef as IORef
@@ -270,9 +271,8 @@ toWaiRequest opts req = do
           sort
             . foldMap
               ( \(hName, hValues) ->
-                  (CI.map Text.encodeUtf8 hName,)
-                    . Text.encodeUtf8
-                    <$> hValues
+                  hValues <&> \hValue ->
+                    (CI.map Text.encodeUtf8 hName, Text.encodeUtf8 hValue)
               )
             . HashMap.toList
             $ HalRequest.multiValueHeaders req,
