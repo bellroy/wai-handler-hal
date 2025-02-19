@@ -1,5 +1,12 @@
 # Revision history for wai-handler-hal
 
+## 0.4.0.1 -- 2025-02-19
+
+- Use a `NonEmpty` list when consuming the result of `getAddrInfo`.
+- When resolving source IPs, do not require `AF_INET` (IPv4)
+  addresses. This allows IPv6 source addresses to be passed through to
+  the underlying `wai` `Application`.
+
 ## 0.4.0.0 -- 2024-01-17
 
 - New function: `Wai.Handler.Hal.runWithOptions :: Options ->
