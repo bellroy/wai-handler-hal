@@ -111,7 +111,7 @@ jobs:
           cabal-plan --version
       - name: install doctest
         run: |
-          $CABAL --store-dir=$HOME/.haskell-ci-tools/store v2-install $ARG_COMPILER --ignore-project -j2 doctest --constraint='doctest ^>=0.22.0'
+          $CABAL --store-dir=$HOME/.haskell-ci-tools/store v2-install $ARG_COMPILER --ignore-project -j2 doctest --constraint='doctest ^>=0.24.0'
           doctest --version
       - if: "always()"
         name: "save cache (tools)"
@@ -177,7 +177,7 @@ jobs:
       - name: doctest
         run: |
           cd ${PKGDIR_PROJECT} || false
-          doctest  -XHaskell2010 src
+          doctest -XHaskell2010 src
       - name: cabal check
         run: |
           cd ${PKGDIR_PROJECT} || false
