@@ -7,11 +7,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1733824700,
-        "narHash": "sha256-1CK1PJE1z7dYEJSGaFHCtxDVcONh1AUZasqEhpf823E=",
+        "lastModified": 1741068581,
+        "narHash": "sha256-IvfQKj3TBFAA+um/v/tF1brnMVqnYqzMyEpKNXl4AZY=",
         "owner": "bellroy",
         "repo": "bellroy-nix-foss",
-        "rev": "9758ab8a249a695cc1a5fe686b6a66d5f50319d8",
+        "rev": "b0bf7e0feec98c8d3e7ee771fdf632d3ca0b7b1a",
         "type": "github"
       },
       "original": {
@@ -78,33 +78,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1733686850,
-        "narHash": "sha256-NQEO/nZWWGTGlkBWtCs/1iF1yl2lmQ1oY/8YZrumn3I=",
+        "lastModified": 1741037377,
+        "narHash": "sha256-SvtvVKHaUX4Owb+PasySwZsoc5VUeTf1px34BByiOxw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "dd51f52372a20a93c219e8216fe528a648ffcbf4",
+        "rev": "02032da4af073d0f6110540c8677f16d4be0117f",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
         "ref": "nixpkgs-unstable",
         "type": "indirect"
-      }
-    },
-    "nixpkgs-stable": {
-      "locked": {
-        "lastModified": 1730741070,
-        "narHash": "sha256-edm8WG19kWozJ/GqyYx2VjW99EdhjKwbY3ZwdlPAAlo=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "d063c1dd113c91ab27959ba540c0d9753409edf3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-24.05",
-        "repo": "nixpkgs",
-        "type": "github"
       }
     },
     "pre-commit-hooks": {
@@ -114,15 +98,14 @@
         "nixpkgs": [
           "bellroy-nix-foss",
           "nixpkgs"
-        ],
-        "nixpkgs-stable": "nixpkgs-stable"
+        ]
       },
       "locked": {
-        "lastModified": 1733665616,
-        "narHash": "sha256-+XTFXYlFJBxohhMGLDpYdEnhUNdxN8dyTA8WAd+lh2A=",
+        "lastModified": 1740915799,
+        "narHash": "sha256-JvQvtaphZNmeeV+IpHgNdiNePsIpHD5U/7QN5AeY44A=",
         "owner": "cachix",
         "repo": "pre-commit-hooks.nix",
-        "rev": "d8c02f0ffef0ef39f6063731fc539d8c71eb463a",
+        "rev": "42b1ba089d2034d910566bf6b40830af6b8ec732",
         "type": "github"
       },
       "original": {
