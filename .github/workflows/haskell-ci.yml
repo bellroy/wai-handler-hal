@@ -13,7 +13,7 @@ jobs:
         uses: "kleidukos/get-tested@a0aa3f2d4ab0d10daa49dc9ee8c706d673fb0e02"
         with:
           cabal-file: wai-handler-hal.cabal
-          ubuntu-version: '20.04'
+          ubuntu-version: '24.04'
           version: '0.1.7.1'
     timeout-minutes: 30
   tests:
