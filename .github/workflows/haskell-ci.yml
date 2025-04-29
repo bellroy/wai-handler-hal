@@ -96,7 +96,7 @@ jobs:
       - name: update cabal index
         run: "$CABAL v2-update -v"
       - name: "cache (tools)"
-        uses: "actions/cache/restore@v4"
+        uses: "actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684"
         with:
           key: "${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1"
           path: "~/.haskell-ci-tools"
@@ -115,12 +115,12 @@ jobs:
           doctest --version
       - if: "always()"
         name: "save cache (tools)"
-        uses: "actions/cache/save@v4"
+        uses: "actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684"
         with:
           key: "${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1"
           path: "~/.haskell-ci-tools"
       - name: checkout
-        uses: "actions/checkout@v4"
+        uses: "bellroy/gha-workflows/composite/checkout@master"
         with:
           path: source
       - name: initial cabal.project for sdist
@@ -156,7 +156,7 @@ jobs:
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH --dry-run all
           cabal-plan
       - name: restore cache
-        uses: "actions/cache/restore@v4"
+        uses: "actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684"
         with:
           key: "${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}"
           path: "~/.cabal/store"
@@ -191,7 +191,7 @@ jobs:
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks all
       - if: "always()"
         name: save cache
-        uses: "actions/cache/save@v4"
+        uses: "actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684"
         with:
           key: "${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}"
           path: "~/.cabal/store"
