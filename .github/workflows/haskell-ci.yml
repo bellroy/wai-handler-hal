@@ -120,7 +120,7 @@ jobs:
           key: "${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1"
           path: "~/.haskell-ci-tools"
       - name: checkout
-        uses: "bellroy/gha-workflows/composite/checkout@master"
+        uses: "actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11"
         with:
           path: source
       - name: initial cabal.project for sdist
