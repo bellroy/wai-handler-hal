@@ -227,7 +227,9 @@ toWaiRequest opts req = do
       pathSegments =
         Text.splitOn "/" . Text.dropWhile (== '/') $ HalRequest.path req
       query =
-        sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
+        sort . constructQuery $
+          HalRequest.multiValueQueryStringParameters req
+            `HashMap.union` ((: []) <$> HalRequest.queryStringParameters req)
       hints =
         NS.defaultHints
           { NS.addrFlags = [NS.AI_NUMERICHOST],
@@ -275,7 +277,8 @@ toWaiRequest opts req = do
                     (CI.map Text.encodeUtf8 hName, Text.encodeUtf8 hValue)
               )
             . HashMap.toList
-            $ HalRequest.multiValueHeaders req,
+            $ HalRequest.multiValueHeaders req
+              `HashMap.union` ((: []) <$> HalRequest.headers req),
         Wai.isSecure = True,
         Wai.remoteHost = sourceHost,
         Wai.pathInfo = pathSegments,

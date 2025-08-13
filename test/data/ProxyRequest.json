@@ -9,11 +9,16 @@
         "X-Amzn-Trace-Id": "Root=1-11111111-111111111111111111111111",
         "X-Forwarded-For": "123.123.123.123",
         "X-Forwarded-Port": "443",
-        "X-Forwarded-Proto": "https"
+        "X-Forwarded-Proto": "https",
+        "Content-Type": "application/json"
     },
     "multiValueHeaders": {
         "accept": [
             "application/json"
+        ],
+        "Accept-Language": [
+            "en",
+            "fr"
         ],
         "Host": [
             "ffffffffff.execute-api.us-east-1.amazonaws.com"
@@ -37,7 +42,8 @@
     "queryStringParameters": {
         "MaxResultsPerPage": "100",
         "PostedAfter": "2022-05-31T22:16:43Z",
-        "PostedBefore": "2022-05-31T23:16:43Z"
+        "PostedBefore": "2022-05-31T23:16:43Z",
+        "language": "en"
     },
     "multiValueQueryStringParameters": {
         "MaxResultsPerPage": [
@@ -48,6 +54,10 @@
         ],
         "PostedBefore": [
             "2022-05-31T23:16:43Z"
+        ],
+        "country_code": [
+            "US",
+            "CA"
         ]
     },
     "pathParameters": {

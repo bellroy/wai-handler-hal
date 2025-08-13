@@ -2,10 +2,22 @@ Request
     { requestMethod = "GET"
     , httpVersion = HTTP/1.1
     , rawPathInfo = "/foo/bar/baz"
-    , rawQueryString = "?MaxResultsPerPage=100&PostedAfter=2022-05-31T22%3A16%3A43Z&PostedBefore=2022-05-31T23%3A16%3A43Z"
+    , rawQueryString = "?MaxResultsPerPage=100&PostedAfter=2022-05-31T22%3A16%3A43Z&PostedBefore=2022-05-31T23%3A16%3A43Z&country_code=CA&country_code=US&language=en"
     , requestHeaders =
         [
             ( "accept"
+            , "application/json"
+            )
+        ,
+            ( "Accept-Language"
+            , "en"
+            )
+        ,
+            ( "Accept-Language"
+            , "fr"
+            )
+        ,
+            ( "Content-Type"
             , "application/json"
             )
         ,
@@ -52,6 +64,18 @@ Request
         ,
             ( "PostedBefore"
             , Just "2022-05-31T23:16:43Z"
+            )
+        ,
+            ( "country_code"
+            , Just "CA"
+            )
+        ,
+            ( "country_code"
+            , Just "US"
+            )
+        ,
+            ( "language"
+            , Just "en"
             )
         ]
     , requestBody = <IO ByteString>
