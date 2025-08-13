@@ -1,5 +1,10 @@
 # Revision history for wai-handler-hal
 
+## 0.4.0.2 -- 2025-08-14
+
+- Union single and multi-value query parameters and headers when
+  converting a `hal` `ProxyRequest` to a `wai` `Request`
+
 ## 0.4.0.1 -- 2025-02-19
 
 - Use a `NonEmpty` list when consuming the result of `getAddrInfo`.
