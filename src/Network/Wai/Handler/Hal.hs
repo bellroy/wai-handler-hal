@@ -226,6 +226,10 @@ toWaiRequest opts req = do
   let port = portNumber opts
       pathSegments =
         Text.splitOn "/" . Text.dropWhile (== '/') $ HalRequest.path req
+      -- ApiGateway will put the same value into both @queryStringParameters@ and
+      -- @multiValueQueryStringParameters@, but we union them anyway to prevent a
+      -- situation where manually creating a ProxyRequest using only one of these
+      -- fields and they are dropped from the resulting @Wai.Request@
       query =
         sort . constructQuery $
           HalRequest.multiValueQueryStringParameters req
@@ -269,6 +273,10 @@ toWaiRequest opts req = do
         Wai.rawQueryString = case query of
           [] -> ""
           _ -> renderQuery True query,
+        -- ApiGateway will put the same value into both @headers@ and
+        -- @multiValueHeaders@, but we union them anyway to prevent a
+        -- situation where manually creating a ProxyRequest using only one of these
+        -- fields and they are dropped from the resulting @Wai.Request@
         Wai.requestHeaders =
           sort
             . foldMap
