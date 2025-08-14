@@ -216,6 +216,15 @@ runWithContext opts app ctx req = liftIO $ do
 -- | Convert the request sent to a Lambda serving an API Gateway proxy
 -- integration into a WAI request.
 --
+-- When processing multiple values for the same
+-- [HTTP header|query parameter], API Gateway will put the final such
+-- value into ['HalRequest.headers'|'HalRequest.queryStringParameters']
+-- and all such values into
+-- ['HalRequest.multiValueHeaders'|'HalRequest.multiValueQueryStringParameters'].
+-- We merge both but exclusively use the multi-value version if it exists,
+-- to ensure that [headers|query parameters] defined in hand-crafted
+-- 'HalRequest.ProxyRequest's always appear in the 'WaiRequest.Request'.
+--
 -- __Note:__ We aren't told the HTTP version the client is using, so
 -- we assume HTTP 1.1.
 toWaiRequest ::
@@ -227,7 +236,9 @@ toWaiRequest opts req = do
       pathSegments =
         Text.splitOn "/" . Text.dropWhile (== '/') $ HalRequest.path req
       query =
-        sort . constructQuery $ HalRequest.multiValueQueryStringParameters req
+        sort . constructQuery $
+          HalRequest.multiValueQueryStringParameters req
+            `HashMap.union` ((: []) <$> HalRequest.queryStringParameters req)
       hints =
         NS.defaultHints
           { NS.addrFlags = [NS.AI_NUMERICHOST],
@@ -275,7 +286,8 @@ toWaiRequest opts req = do
                     (CI.map Text.encodeUtf8 hName, Text.encodeUtf8 hValue)
               )
             . HashMap.toList
-            $ HalRequest.multiValueHeaders req,
+            $ HalRequest.multiValueHeaders req
+              `HashMap.union` ((: []) <$> HalRequest.headers req),
         Wai.isSecure = True,
         Wai.remoteHost = sourceHost,
         Wai.pathInfo = pathSegments,
