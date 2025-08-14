@@ -216,6 +216,15 @@ runWithContext opts app ctx req = liftIO $ do
 -- | Convert the request sent to a Lambda serving an API Gateway proxy
 -- integration into a WAI request.
 --
+-- When processing multiple values for the same
+-- [HTTP header|query parameter], API Gateway will put the final such
+-- value into ['HalRequest.headers'|'HalRequest.queryStringParameters']
+-- and all such values into
+-- ['HalRequest.multiValueHeaders'|'HalRequest.multiValueQueryStringParameters'].
+-- We merge both but exclusively use the multi-value version if it exists,
+-- to ensure that [headers|query parameters] defined in hand-crafted
+-- 'HalRequest.ProxyRequest's always appear in the 'WaiRequest.Request'.
+--
 -- __Note:__ We aren't told the HTTP version the client is using, so
 -- we assume HTTP 1.1.
 toWaiRequest ::
@@ -226,10 +235,6 @@ toWaiRequest opts req = do
   let port = portNumber opts
       pathSegments =
         Text.splitOn "/" . Text.dropWhile (== '/') $ HalRequest.path req
-      -- ApiGateway will put the same value into both @queryStringParameters@ and
-      -- @multiValueQueryStringParameters@, but we union them anyway to prevent a
-      -- situation where manually creating a ProxyRequest using only one of these
-      -- fields and they are dropped from the resulting @Wai.Request@
       query =
         sort . constructQuery $
           HalRequest.multiValueQueryStringParameters req
@@ -273,10 +278,6 @@ toWaiRequest opts req = do
         Wai.rawQueryString = case query of
           [] -> ""
           _ -> renderQuery True query,
-        -- ApiGateway will put the same value into both @headers@ and
-        -- @multiValueHeaders@, but we union them anyway to prevent a
-        -- situation where manually creating a ProxyRequest using only one of these
-        -- fields and they are dropped from the resulting @Wai.Request@
         Wai.requestHeaders =
           sort
             . foldMap
