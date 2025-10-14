@@ -28,16 +28,14 @@ extra-source-files:
   test/golden/WaiRequest.txt
 
 tested-with:
-  GHC ==8.6.5
-   || ==8.8.4
-   || ==8.10.7
+  GHC ==8.10.7
    || ==9.0.2
-   || ==9.2.4
-   || ==9.4.5
-   || ==9.6.6
-   || ==9.8.2
-   || ==9.10.1
-   || ==9.12.1
+   || ==9.2.8
+   || ==9.4.8
+   || ==9.6.7
+   || ==9.8.4
+   || ==9.10.3
+   || ==9.12.2
 
 common opts
   default-language: Haskell2010
