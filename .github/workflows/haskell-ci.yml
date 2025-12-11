@@ -2,7 +2,7 @@
 # Think twice before editing it directly.
 env:
   CABAL_FILE_RELATIVE_PATH_NO_EXTENSION: wai-handler-hal
-  CABAL_VERSION: 3.14.2.0
+  CABAL_VERSION: 3.16.0.0
   GHCUP_VERSION: 0.1.50.2
   LANGUAGE_EDITION: Haskell2010
 jobs:
@@ -14,7 +14,7 @@ jobs:
     steps:
     - id: set-matrix
       name: Extract the tested GHC versions
-      uses: kleidukos/get-tested@a0aa3f2d4ab0d10daa49dc9ee8c706d673fb0e02
+      uses: kleidukos/get-tested@ed6a02cb5459130127e6f1143a9b7dd0501cd211
       with:
         cabal-file: wai-handler-hal.cabal
         ubuntu-version: '24.04'
@@ -122,7 +122,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1
         path: ~/.haskell-ci-tools
     - name: checkout
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
       with:
         path: source
     - name: initial cabal.project for sdist
