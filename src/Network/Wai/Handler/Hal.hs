@@ -63,7 +63,7 @@ import Data.Functor ((<&>))
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.IORef as IORef
-import Data.List (sort)
+import Data.List (foldl', sort)
 import Data.List.NonEmpty (NonEmpty (..))
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
