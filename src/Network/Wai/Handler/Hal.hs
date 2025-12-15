@@ -329,7 +329,7 @@ constructQuery = foldMap expandParamList . HashMap.toList
 getHeader :: HeaderName -> HalRequest.ProxyRequest a -> Maybe ByteString
 getHeader h =
   fmap Text.encodeUtf8
-    . HashMap.lookup (CI.map Text.decodeUtf8 h)
+    . HashMap.lookup (CI.map Text.decodeUtf8Lenient h)
     . HalRequest.headers
 
 -- | Convert a WAI 'Wai.Response' into a hal
@@ -369,11 +369,11 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
 createProxyBody :: Options -> MediaType -> ByteString -> HalResponse.ProxyBody
 createProxyBody opts contentType body =
   HalResponse.ProxyBody
-    { HalResponse.contentType = Text.decodeUtf8 $ renderHeader contentType,
+    { HalResponse.contentType = Text.decodeUtf8Lenient $ renderHeader contentType,
       HalResponse.serialized =
         if isBase64Encoded
-          then Text.decodeUtf8 $ Base64.encode body
-          else Text.decodeUtf8 body,
+          then Text.decodeUtf8Lenient $ Base64.encode body
+          else Text.decodeUtf8Lenient body,
       HalResponse.isBase64Encoded
     }
   where
@@ -385,8 +385,8 @@ addHeaders headers response = foldl' addHeader response headers
   where
     addHeader r (hName, hValue) =
       HalResponse.addHeader
-        (Text.decodeUtf8 $ CI.original hName)
-        (Text.decodeUtf8 hValue)
+        (Text.decodeUtf8Lenient $ CI.original hName)
+        (Text.decodeUtf8Lenient hValue)
         r
 
 -- | Try to find the content-type of a response, given the response
