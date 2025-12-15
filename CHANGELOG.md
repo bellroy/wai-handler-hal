@@ -4,7 +4,8 @@
 
 - Breaking change: Replace unsafe `decodeUtf8` with `decodeUtf8Lenient`
   for header and body decoding. Invalid UTF-8 sequences are now replaced
-  with Unicode replacement characters (U+FFFD) instead of throwing exceptions.
+  with Unicode replacement characters (U+FFFD) instead of throwing exceptions
+  from purely functional code.
 
 ## 0.4.0.2 -- 2025-08-14
 
