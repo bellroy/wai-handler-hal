@@ -4,7 +4,9 @@ env:
   CABAL_FILE_RELATIVE_PATH_NO_EXTENSION: wai-handler-hal
   CABAL_VERSION: 3.16.0.0
   GHCUP_VERSION: 0.1.50.2
+  LANG: C.UTF-8
   LANGUAGE_EDITION: Haskell2010
+  LC_ALL: C.UTF-8
 jobs:
   generate-matrix:
     name: Generate matrix from cabal
