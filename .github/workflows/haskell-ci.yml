@@ -37,7 +37,7 @@ jobs:
     - name: apt
       run: |
         apt-get update
-        apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common libtinfo5
+        apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git libtinfo5
         mkdir -p "$HOME/.ghcup/bin"
         curl -sL https://downloads.haskell.org/ghcup/$GHCUP_VERSION/x86_64-linux-ghcup-$GHCUP_VERSION > "$HOME/.ghcup/bin/ghcup"
         chmod a+x "$HOME/.ghcup/bin/ghcup"
