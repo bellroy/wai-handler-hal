@@ -16,7 +16,7 @@ jobs:
     steps:
     - id: set-matrix
       name: Extract the tested GHC versions
-      uses: kleidukos/get-tested@ed6a02cb5459130127e6f1143a9b7dd0501cd211
+      uses: kleidukos/get-tested@a55a250eac23bcc4bcd1cb22d77be61baea5a7e2
       with:
         cabal-file: wai-handler-hal.cabal
         ubuntu-version: '24.04'
