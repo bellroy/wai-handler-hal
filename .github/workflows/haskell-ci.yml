@@ -46,24 +46,27 @@ jobs:
     - name: Set PATH and environment variables
       run: |
         echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-        echo "LANG=C.UTF-8" >> "$GITHUB_ENV"
-        echo "CABAL_DIR=$HOME/.cabal" >> "$GITHUB_ENV"
-        echo "CABAL_CONFIG=$HOME/.cabal/config" >> "$GITHUB_ENV"
-        HCDIR=/opt/$HCKIND/$HCVER
-        HC=$("$HOME/.ghcup/bin/ghcup" whereis ghc "$HCVER")
-        HCPKG=$(echo "$HC" | sed 's#ghc$#ghc-pkg#')
-        HADDOCK=$(echo "$HC" | sed 's#ghc$#haddock#')
-        echo "HC=$HC" >> "$GITHUB_ENV"
-        echo "HCPKG=$HCPKG" >> "$GITHUB_ENV"
-        echo "HADDOCK=$HADDOCK" >> "$GITHUB_ENV"
-        echo "CABAL=$HOME/.ghcup/bin/cabal-$CABAL_VERSION -vnormal+nowrap" >> "$GITHUB_ENV"
-        HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\d+)\.(\d+)\.(\d+)(\.(\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')
-        echo "HCNUMVER=$HCNUMVER" >> "$GITHUB_ENV"
-        echo "ARG_TESTS=--enable-tests" >> "$GITHUB_ENV"
-        echo "ARG_BENCH=--enable-benchmarks" >> "$GITHUB_ENV"
-        echo "HEADHACKAGE=false" >> "$GITHUB_ENV"
-        echo "ARG_COMPILER=--$HCKIND --with-compiler=$HC" >> "$GITHUB_ENV"
-        echo "GHCJSARITH=0" >> "$GITHUB_ENV"
+
+          HC=$("$HOME/.ghcup/bin/ghcup" whereis ghc "$HCVER")
+          HCPKG=$(echo "$HC" | sed 's#ghc$#ghc-pkg#')
+          HADDOCK=$(echo "$HC" | sed 's#ghc$#haddock#')
+          HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\d+)\.(\d+)\.(\d+)(\.(\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')
+
+        {
+          echo "LANG=C.UTF-8"
+          echo "CABAL_DIR=$HOME/.cabal"
+          echo "CABAL_CONFIG=$HOME/.cabal/config"
+          echo "HC=$HC"
+          echo "HCPKG=$HCPKG"
+          echo "HADDOCK=$HADDOCK"
+          echo "CABAL=$HOME/.ghcup/bin/cabal-$CABAL_VERSION -vnormal+nowrap"
+          echo "HCNUMVER=$HCNUMVER"
+          echo "ARG_TESTS=--enable-tests"
+          echo "ARG_BENCH=--enable-benchmarks"
+          echo "HEADHACKAGE=false"
+          echo "ARG_COMPILER=--$HCKIND --with-compiler=$HC"
+          echo "GHCJSARITH=0"
+        } >> $GITHUB_ENV
     - name: env
       run: |
         env
