@@ -7,11 +7,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1771297770,
-        "narHash": "sha256-tbFGVRLVytQGQgZZkJAwyge6ISpojHiR7TxQws51jBA=",
+        "lastModified": 1776127325,
+        "narHash": "sha256-0K6I/yPqeIXloD/RtesnyzrZ6ObTxZqcBXq+v2+w2T8=",
         "owner": "bellroy",
         "repo": "bellroy-nix-foss",
-        "rev": "a52e52ca9a21bd32f45662f43fceca9e0b30fe48",
+        "rev": "2c0f359c5b8aee71dcb27274895e7547889c4be7",
         "type": "github"
       },
       "original": {
@@ -64,11 +64,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770726378,
-        "narHash": "sha256-kck+vIbGOaM/dHea7aTBxdFYpeUl/jHOy5W3eyRvVx8=",
+        "lastModified": 1775585728,
+        "narHash": "sha256-8Psjt+TWvE4thRKktJsXfR6PA/fWWsZ04DVaY6PUhr4=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "5eaaedde414f6eb1aea8b8525c466dc37bba95ae",
+        "rev": "580633fa3fe5fc0379905986543fd7495481913d",
         "type": "github"
       },
       "original": {
@@ -101,11 +101,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1771216249,
-        "narHash": "sha256-FNEmjUiwVcbaMx+DLNAPyEZMdw4ASGvEqJaswcJVRDc=",
+        "lastModified": 1775994940,
+        "narHash": "sha256-z5tkSIdPUs6IG3I9HD2e2stdzOKKh0qDeKkOURYQw6o=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7cdb2c9a4f4ec945cdd8348800b9205e5069b48f",
+        "rev": "9d600cdba342cea3b59aef50e093a547a0f4012f",
         "type": "github"
       },
       "original": {
