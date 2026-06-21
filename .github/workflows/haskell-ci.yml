@@ -152,7 +152,7 @@ jobs:
           path: ~/.haskell-ci-tools
 
       - name: checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v6
         with:
           path: source
 
