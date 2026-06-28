@@ -124,7 +124,7 @@ jobs:
           $CABAL v2-update -v
 
       - name: restore cache (~/.haskell-ci-tools)
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.0.5
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1
           path: ~/.haskell-ci-tools
@@ -146,7 +146,7 @@ jobs:
 
       - name: save cache (~/.haskell-ci-tools)
         if: always()
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v5.0.5
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1
           path: ~/.haskell-ci-tools
@@ -194,7 +194,7 @@ jobs:
           cabal-plan
 
       - name: restore cache (~/.cabal/store)
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.0.5
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}
           path: ~/.cabal/store
@@ -238,7 +238,7 @@ jobs:
 
       - name: save cache (~/.cabal/store)
         if: always()
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v5.0.5
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}
           path: ~/.cabal/store
