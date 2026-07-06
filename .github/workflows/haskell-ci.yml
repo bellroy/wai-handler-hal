@@ -3,10 +3,10 @@
 name: Haskell CI
 
 on:
-  push:
-    branches-ignore:
-      - refs/tags/*_staging
-      - refs/tags/*_production
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch: {}
 
 env:
   CABAL_FILE_RELATIVE_PATH_NO_EXTENSION: wai-handler-hal
@@ -30,7 +30,6 @@ jobs:
         with:
           cabal-file: wai-handler-hal.cabal
           ubuntu-version: 24.04
-          version: 0.1.7.1
 
   tests:
     name: ${{ matrix.ghc }} on ${{ matrix.os }}
@@ -124,7 +123,7 @@ jobs:
           $CABAL v2-update -v
 
       - name: restore cache (~/.haskell-ci-tools)
-        uses: actions/cache/restore@v5
+        uses: actions/cache@v6
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1
           path: ~/.haskell-ci-tools
@@ -144,16 +143,10 @@ jobs:
           $CABAL --store-dir=$HOME/.haskell-ci-tools/store v2-install $ARG_COMPILER --ignore-project -j2 doctest --constraint='doctest ^>=0.24.0'
           doctest --version
 
-      - name: save cache (~/.haskell-ci-tools)
-        if: always()
-        uses: actions/cache/save@v5
-        with:
-          key: ${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1
-          path: ~/.haskell-ci-tools
-
       - name: checkout
         uses: actions/checkout@v7
         with:
+          clean: false
           path: source
 
       - name: initial cabal.project for sdist
@@ -194,9 +187,9 @@ jobs:
           cabal-plan
 
       - name: restore cache (~/.cabal/store)
-        uses: actions/cache/restore@v5
+        uses: actions/cache@v6
         with:
-          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('**/*.cabal') }}
           path: ~/.cabal/store
           restore-keys: ${{ runner.os }}-${{ matrix.ghc }}-
 
@@ -235,10 +228,3 @@ jobs:
         run: |
           rm -f cabal.project.local
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks all
-
-      - name: save cache (~/.cabal/store)
-        if: always()
-        uses: actions/cache/save@v5
-        with:
-          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ github.sha }}
-          path: ~/.cabal/store
