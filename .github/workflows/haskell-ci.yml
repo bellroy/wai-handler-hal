@@ -123,7 +123,7 @@ jobs:
           $CABAL v2-update -v
 
       - name: restore cache (~/.haskell-ci-tools)
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-tools-ac1dc7e1
           path: ~/.haskell-ci-tools
@@ -187,7 +187,7 @@ jobs:
           cabal-plan
 
       - name: restore cache (~/.cabal/store)
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('**/*.cabal') }}
           path: ~/.cabal/store
