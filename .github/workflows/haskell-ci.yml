@@ -23,7 +23,7 @@ jobs:
         id: matrix
         uses: kleidukos/get-tested@a55a250eac23bcc4bcd1cb22d77be61baea5a7e2
         with:
-          cabal-file: ${{ github.event.repository.name }}.cabal
+          cabal-file: wai-handler-hal.cabal
           ubuntu-version: latest
 
   tests:
@@ -50,10 +50,11 @@ jobs:
           sparse-checkout: haskell-os-ci
           ref: haskell-os-ci-v1
 
-      - name: Cabal test
+      - name: Validate build, tests, and packaging
         uses: ./haskell-os-ci
         with:
-          cabal-file-relative-path: ${{ github.event.repository.name }}
+          cabal-file-relative-path: wai-handler-hal
+          language-edition: Haskell2010
 
   tests-completion:
     name: All tests jobs completed
