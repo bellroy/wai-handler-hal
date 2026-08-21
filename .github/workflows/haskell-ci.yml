@@ -1,0 +1,71 @@
+name: Haskell CI
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  matrix:
+    name: Generate matrix from cabal file
+    runs-on: ubuntu-slim
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Extract the tested GHC versions
+        id: matrix
+        uses: kleidukos/get-tested@a55a250eac23bcc4bcd1cb22d77be61baea5a7e2
+        with:
+          cabal-file: ${{ github.event.repository.name }}.cabal
+          ubuntu-version: latest
+
+  tests:
+    name: ${{ matrix.ghc }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [matrix]
+    timeout-minutes: 30
+    strategy:
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+    steps:
+      - name: Generate App token
+        id: token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.ACTIONS_CHECKOUT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.ACTIONS_CHECKOUT_APP_PRIVATE_KEY }}
+          repositories: actions
+
+      - name: Checkout action
+        uses: actions/checkout@v7
+        with:
+          repository: bellroy/actions
+          token: ${{ steps.token.outputs.token }}
+          sparse-checkout: haskell-os-ci
+          ref: haskell-os-ci-v1
+
+      - name: Cabal test
+        uses: ./haskell-os-ci
+        with:
+          cabal-file-relative-path: ${{ github.event.repository.name }}
+
+  tests-completion:
+    name: All tests jobs completed
+    runs-on: ubuntu-slim
+    if: ${{ !cancelled() }}
+    needs: [tests]
+    steps:
+      - name: Fan in matrix
+        run: |
+          if [[ "${{ needs.tests.result }}" == "failure" ]]; then
+            echo "::error::Testing one or more GHC versions have failed"
+            exit 1
+          else
+            echo "::info::All tests have succeeded"
+          fi
