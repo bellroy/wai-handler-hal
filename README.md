@@ -161,8 +161,8 @@ The formatters used in this repo are provided by `shell.nix`:
 
 * `*.hs`: [`ormolu`](https://github.com/tweag/ormolu)
 * `*.cabal`:
-  [`cabal-fmt`](https://hackage.haskell.org/package/cabal-fmt)
-  (`cabal-fmt --inplace wai-handler-hal.cabal`)
+  [`cabal-gild`](https://hackage.haskell.org/package/cabal-gild)
+  (`cabal-gild --inplace wai-handler-hal.cabal`)
 * `*.nix`:
   [`nixpkgs-fmt`](https://github.com/nix-community/nixpkgs-fmt)
   (`nixpkgs-fmt *.nix`)

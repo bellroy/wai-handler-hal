@@ -1,5 +1,10 @@
 # Revision history for wai-handler-hal
 
+## 0.5.0.1 -- 2026-09-29
+
+- Use `defaultRequest` from `wai` to construct wai request to stay compatible
+  with future request fields that we don't need to care about.
+
 ## 0.5.0.0 -- 2025-12-14
 
 - Breaking change: Replace unsafe `decodeUtf8` with `decodeUtf8Lenient`

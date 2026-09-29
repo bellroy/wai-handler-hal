@@ -92,7 +92,7 @@ import Network.HTTP.Types.Version (HttpVersion (..))
 import Network.Socket (PortNumber)
 import qualified Network.Socket as NS
 import qualified Network.Wai as Wai
-import qualified Network.Wai.Internal as Wai
+import qualified Network.Wai.Internal as Wai (Response (..), ResponseReceived (..))
 import System.IO
   ( IOMode (..),
     SeekMode (..),
@@ -268,7 +268,7 @@ toWaiRequest opts req = do
           pure . NS.SockAddrInet port $ NS.tupleToHostAddress (127, 0, 0, 1)
   body <- returnChunks $ HalRequest.body req
   pure
-    Wai.Request
+    Wai.defaultRequest
       { Wai.requestMethod = Text.encodeUtf8 $ HalRequest.httpMethod req,
         Wai.httpVersion = HttpVersion 1 1,
         Wai.rawPathInfo =
