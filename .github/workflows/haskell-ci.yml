@@ -48,11 +48,12 @@ jobs:
           repository: bellroy/actions
           token: ${{ steps.token.outputs.token }}
           sparse-checkout: haskell-os-ci
-          ref: haskell-os-ci-v1
+          ref: haskell-os-ci-v2
 
       - name: Validate build, tests, and packaging
         uses: ./haskell-os-ci
         with:
+          ghc-version: ${{ matrix.ghc }}
           cabal-file-relative-path: wai-handler-hal
           language-edition: Haskell2010
 
