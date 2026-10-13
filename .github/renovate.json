@@ -13,6 +13,11 @@
   },
   "packageRules": [
     {
+      "description": "Schedule updates for all packages on Sundays",
+      "matchPackageNames": ["**"],
+      "schedule": ["on sunday"]
+    },
+    {
       "matchManagers": [
         "github-actions"
       ],
