@@ -7,11 +7,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1781048285,
-        "narHash": "sha256-w0m2DnFjFe35WcFRIaW/laEMZywCWhrOL/mn8iZxh0g=",
+        "lastModified": 1790653428,
+        "narHash": "sha256-X6/CRH31scjN2zrTeXMhVuNgUELV7f4QqPbHabCkt98=",
         "owner": "bellroy",
         "repo": "bellroy-nix-foss",
-        "rev": "6e2dd52d93bd3fb08dc4191dc188280b8a5cfd0e",
+        "rev": "f9112560286c17c65910b236303576ac97d7476d",
         "type": "github"
       },
       "original": {
@@ -57,56 +57,32 @@
     "git-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
-        "gitignore": "gitignore",
         "nixpkgs": [
           "bellroy-nix-foss",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1778507602,
-        "narHash": "sha256-kTwur1wV+01SdqskVMSo6JMEpg71ps3HpbFY2GsflKs=",
+        "lastModified": 1790500375,
+        "narHash": "sha256-XN3sDtn8TU9hAc9xqZ+SqRB/HHm2wjxM6aSWYLJU+oo=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "61ab0e80d9c7ab14c256b5b453d8b3fb0189ba0a",
+        "rev": "a0e4241b51206fbcbf52fd322eb5f0cd80f153c4",
         "type": "github"
       },
       "original": {
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "type": "github"
-      }
-    },
-    "gitignore": {
-      "inputs": {
-        "nixpkgs": [
-          "bellroy-nix-foss",
-          "git-hooks",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1709087332,
-        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
-        "owner": "hercules-ci",
-        "repo": "gitignore.nix",
-        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "gitignore.nix",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1780773863,
-        "narHash": "sha256-t0AXyb11HJHwyRkCed8y15unmgwVlbgcIEVdV1XxYvA=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "20872773637de0b44f7ac04cde2098db1286e6d5",
-        "type": "github"
+        "lastModified": 1790537679,
+        "narHash": "sha256-YrBq1/EqpoWAgvdUE2pSQeCMdQsb3lvaLkk8aE0NM2o=",
+        "rev": "04f2338dd72b93278448fb3e3e5cd71af207edb9",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixpkgs/26.05-darwin/nixpkgs-darwin-26.05pre1015066.04f2338dd72b/nixexprs.tar.zst"
       },
       "original": {
         "id": "nixpkgs",
