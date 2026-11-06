@@ -1,5 +1,15 @@
 # Revision history for wai-handler-hal
 
+## 0.5.1.0 -- Unreleased
+
+- Responses with a `Content-Encoding` other than `identity` (e.g.,
+  `gzip` from compression middleware) are now always base64-encoded,
+  regardless of `binaryMediaTypes`. Previously, these binary bodies
+  were decoded as UTF-8 text and corrupted. Your API's
+  `binaryMediaTypes` must cover these responses' content types (often
+  by using `*/*`) for API Gateway to decode them.
+- `bytestring >=0.10.12` is now required.
+
 ## 0.5.0.1 -- 2026-09-29
 
 - Use `defaultRequest` from `wai` to construct wai request to stay compatible

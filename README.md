@@ -65,6 +65,11 @@ testing.
 * The Lambda is never told the HTTP version that the client uses when
   talking with the API Gateway. We assume HTTP 1.1.
 
+* Responses with a `Content-Encoding` other than `identity` (e.g.,
+  from `gzip` middleware) are always base64-encoded. Make sure your
+  API's `binaryMediaTypes` covers their content types (often by using
+  `*/*`), or prefer API Gateway's built-in response compression.
+
 ## Packaging
 
 Lambda functions are packaged in one of two ways: as `.zip` files or
