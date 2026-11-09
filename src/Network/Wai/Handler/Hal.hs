@@ -50,12 +50,14 @@ import qualified AWS.Lambda.Events.ApiGateway.ProxyRequest as HalRequest hiding
   )
 import qualified AWS.Lambda.Events.ApiGateway.ProxyResponse as HalResponse
 import Control.Exception (IOException, tryJust)
+import Control.Monad (guard)
 import Control.Monad.IO.Class (MonadIO (..))
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Builder as Builder
 import qualified Data.ByteString.Builder.Extra as Builder
+import qualified Data.ByteString.Char8 as Char8
 import qualified Data.ByteString.Lazy as LByteString
 import qualified Data.CaseInsensitive as CI
 import Data.Function ((&))
@@ -75,12 +77,14 @@ import Network.HTTP.Media (MediaType, matches, parseAccept, renderHeader)
 import Network.HTTP.Types.Header
   ( HeaderName,
     ResponseHeaders,
+    hContentEncoding,
     hContentType,
     hHost,
     hRange,
     hReferer,
     hUserAgent,
   )
+import Network.HTTP.Types.Status (Status)
 import Network.HTTP.Types.URI
   ( Query,
     QueryItem,
@@ -134,6 +138,15 @@ data Options = Options
     --
     -- If you set @binaryMediaTypes@ in your API, you should override
     -- the default (empty) list to match.
+    --
+    -- Responses with a @Content-Encoding@ other than @identity@
+    -- (e.g., @gzip@ from compression middleware) are /always/
+    -- base64-encoded, regardless of this list, because their bodies
+    -- are binary. Your API's @binaryMediaTypes@ must then cover
+    -- those responses' content types (often by using @*/*@), or API
+    -- Gateway will pass the base64 text through to the client. API
+    -- Gateway's own response compression is usually a better choice
+    -- than compressing inside your Lambda.
     --
     -- /See:/ [Content type conversion in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-payload-encodings-workflow.html)
     -- in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/).
@@ -335,18 +348,11 @@ getHeader h =
 -- | Convert a WAI 'Wai.Response' into a hal
 -- 'HalResponse.ProxyResponse'.
 fromWaiResponse :: Options -> Wai.Response -> IO HalResponse.ProxyResponse
-fromWaiResponse opts (Wai.ResponseFile status headers path mFilePart) = do
-  fileData <- readFilePart path mFilePart
-  pure
-    . addHeaders headers
-    . HalResponse.response status
-    . createProxyBody opts (getContentType headers)
-    $ fileData
+fromWaiResponse opts (Wai.ResponseFile status headers path mFilePart) =
+  createProxyResponse opts status headers <$> readFilePart path mFilePart
 fromWaiResponse opts (Wai.ResponseBuilder status headers builder) =
   pure
-    . addHeaders headers
-    . HalResponse.response status
-    . createProxyBody opts (getContentType headers)
+    . createProxyResponse opts status headers
     . LByteString.toStrict
     $ Builder.toLazyByteString builder
 fromWaiResponse opts (Wai.ResponseStream status headers stream) = do
@@ -366,18 +372,43 @@ readFilePart path mPart = withFile path ReadMode $ \h -> do
       hSeek h AbsoluteSeek offset
       ByteString.hGet h $ fromIntegral count
 
-createProxyBody :: Options -> MediaType -> ByteString -> HalResponse.ProxyBody
-createProxyBody opts contentType body =
-  HalResponse.ProxyBody
-    { HalResponse.contentType = Text.decodeUtf8Lenient $ renderHeader contentType,
-      HalResponse.serialized =
-        if isBase64Encoded
-          then Text.decodeUtf8Lenient $ Base64.encode body
-          else Text.decodeUtf8Lenient body,
-      HalResponse.isBase64Encoded
-    }
+createProxyResponse ::
+  Options ->
+  Status ->
+  ResponseHeaders ->
+  ByteString ->
+  HalResponse.ProxyResponse
+createProxyResponse opts status headers body =
+  addHeaders headers . HalResponse.response status $
+    HalResponse.ProxyBody
+      { HalResponse.contentType =
+          Text.decodeUtf8Lenient $ renderHeader contentType,
+        HalResponse.serialized =
+          Text.decodeUtf8Lenient $
+            if isBase64Encoded then Base64.encode body else body,
+        HalResponse.isBase64Encoded
+      }
   where
-    isBase64Encoded = any (contentType `matches`) $ binaryMediaTypes opts
+    -- Try to find the content-type of a response. If we can't, use
+    -- @"application/octet-stream"@.
+    contentType :: MediaType
+    contentType =
+      fromMaybe "application/octet-stream" $
+        lookup hContentType headers >>= parseAccept
+
+    isBase64Encoded =
+      any (contentType `matches`) (binaryMediaTypes opts)
+        || hasNonIdentityContentEncoding
+
+    -- Does the response declare a @Content-Encoding@ other than
+    -- @identity@? Such bodies (e.g., gzip-compressed) are binary
+    -- regardless of their @Content-Type@.
+    hasNonIdentityContentEncoding = any (/= "identity") $ do
+      (name, value) <- headers
+      guard $ name == hContentEncoding
+      token <- Char8.strip <$> Char8.split ',' value
+      guard . not $ ByteString.null token
+      [CI.mk token]
 
 addHeaders ::
   ResponseHeaders -> HalResponse.ProxyResponse -> HalResponse.ProxyResponse
@@ -388,10 +419,3 @@ addHeaders headers response = foldl' addHeader response headers
         (Text.decodeUtf8Lenient $ CI.original hName)
         (Text.decodeUtf8Lenient hValue)
         r
-
--- | Try to find the content-type of a response, given the response
--- headers. If we can't, return @"application/octet-stream"@.
-getContentType :: ResponseHeaders -> MediaType
-getContentType headers =
-  fromMaybe "application/octet-stream" $
-    lookup hContentType headers >>= parseAccept
